@@ -7,7 +7,8 @@
 
 import UIKit
 
-class ImagesListViewController: UIViewController {
+final class ImagesListViewController: UIViewController {
+    private let currentDate = Date()
     private let photosName: [String] = Array(0...19).map{ "\($0)"}
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -44,24 +45,35 @@ extension ImagesListViewController: UITableViewDataSource {
     }
 }
 
-extension ImagesListViewController {
+private extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        print(indexPath.row)
         guard let image = UIImage(named: photosName[indexPath.row]) else {
             return
         }
         
         cell.cellImage.image = image
-        cell.dateLabel.text = dateFormatter.string(from: Date())
+        cell.dateLabel.text = dateFormatter.string(from: currentDate)
         
         let isLiked = indexPath.row % 2 == 0
         let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
         cell.likeButton.setImage(likeImage, for: .normal)
+        setupGradientView(cell)
+    }
+    
+    func setupGradientView(_ cell: ImagesListCell) {
+        let gradient = CAGradientLayer()
+        let colorTop = UIColor.blackGradientTop
+        let colorBottom = UIColor.blackGradientBottom
+        
+        gradient.colors = [colorTop, colorBottom]
+        gradient.frame = cell.gradientView.bounds
+        cell.gradientView.layer.addSublayer(gradient)
     }
 }
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // TODO: - Добавить логику при нажатии на ячейку
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -76,6 +88,4 @@ extension ImagesListViewController: UITableViewDelegate {
         let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
         return cellHeight
     }
-    
-    
 }

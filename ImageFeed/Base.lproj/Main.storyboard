@@ -51,6 +51,13 @@
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mSO-tf-qMt" userLabel="Gradient View">
+                                                    <rect key="frame" x="16" y="405" width="361" height="30"/>
+                                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.11925309541209644" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="rwZ-Zr-BQk"/>
+                                                    </constraints>
+                                                </imageView>
                                             </subviews>
                                             <color key="backgroundColor" name="Background"/>
                                             <constraints>
@@ -62,12 +69,16 @@
                                                 <constraint firstItem="sya-DC-w8e" firstAttribute="top" secondItem="rLk-sc-xCA" secondAttribute="top" id="aXA-jK-2gK"/>
                                                 <constraint firstItem="rLk-sc-xCA" firstAttribute="leading" secondItem="G14-JU-9Ld" secondAttribute="leading" constant="-8" id="d3v-ZY-q2M"/>
                                                 <constraint firstItem="rLk-sc-xCA" firstAttribute="leading" secondItem="LEa-QC-MKn" secondAttribute="leading" constant="16" id="p1h-Zk-l9k"/>
+                                                <constraint firstItem="mSO-tf-qMt" firstAttribute="bottom" secondItem="rLk-sc-xCA" secondAttribute="bottom" id="sMZ-5J-XMT"/>
+                                                <constraint firstItem="mSO-tf-qMt" firstAttribute="trailing" secondItem="rLk-sc-xCA" secondAttribute="trailing" id="veH-0S-fgI"/>
                                                 <constraint firstItem="rLk-sc-xCA" firstAttribute="trailing" secondItem="sya-DC-w8e" secondAttribute="trailing" id="vmX-D6-6Sr"/>
+                                                <constraint firstItem="mSO-tf-qMt" firstAttribute="leading" secondItem="rLk-sc-xCA" secondAttribute="leading" id="zSZ-e9-TpP"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="cellImage" destination="rLk-sc-xCA" id="Ejb-3p-jcD"/>
                                             <outlet property="dateLabel" destination="G14-JU-9Ld" id="0IA-45-x7D"/>
+                                            <outlet property="gradientView" destination="mSO-tf-qMt" id="sdc-ow-TEH"/>
                                             <outlet property="likeButton" destination="sya-DC-w8e" id="GMR-Cc-UEw"/>
                                         </connections>
                                     </tableViewCell>
