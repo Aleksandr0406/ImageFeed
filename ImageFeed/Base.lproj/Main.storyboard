@@ -106,12 +106,96 @@
             </objects>
             <point key="canvasLocation" x="77.099236641221367" y="-34.507042253521128"/>
         </scene>
+        <!--ProfileViewController-->
+        <scene sceneID="ubu-H7-SKg">
+            <objects>
+                <viewController title="ProfileViewController" id="gjq-Pc-pNQ" customClass="ProfileViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8Wh-dI-9S4">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="AvatarPhoto" translatesAutoresizingMaskIntoConstraints="NO" id="skc-ET-YSY" userLabel="Photo">
+                                <rect key="frame" x="16" y="91" width="70" height="70"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="skc-ET-YSY" secondAttribute="height" multiplier="1:1" id="1iB-1M-cTC"/>
+                                    <constraint firstAttribute="width" constant="70" id="Ily-Ax-qZM"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WE3-jF-1DN" userLabel="LogoutButt">
+                                <rect key="frame" x="325" y="104" width="44" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="WE3-jF-1DN" secondAttribute="height" multiplier="1:1" id="dex-dD-04J" userLabel="aspect = 1:1"/>
+                                    <constraint firstAttribute="height" constant="44" id="lwj-Nk-tkj" userLabel="height = 44"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="Exit"/>
+                                <connections>
+                                    <action selector="exitButton:" destination="gjq-Pc-pNQ" eventType="touchUpInside" id="FDO-yP-NmE"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Екатерина Новикова" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MP9-VK-0J2" userLabel="Name">
+                                <rect key="frame" x="16" y="169" width="217" height="28"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="23"/>
+                                <color key="textColor" name="WhiteText"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@ekaterina_nov" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WVG-7M-TaY" userLabel="Login Name">
+                                <rect key="frame" x="16" y="205" width="217" height="16"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="textColor" name="mailText"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hello, world!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LkW-qf-L4d" userLabel="Description">
+                                <rect key="frame" x="16" y="229" width="217" height="16"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="textColor" name="WhiteText"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="157-GM-09n"/>
+                        <color key="backgroundColor" name="Background"/>
+                        <constraints>
+                            <constraint firstItem="WVG-7M-TaY" firstAttribute="leading" secondItem="157-GM-09n" secondAttribute="leading" constant="16" id="0e9-AK-AgD"/>
+                            <constraint firstItem="WVG-7M-TaY" firstAttribute="trailing" secondItem="MP9-VK-0J2" secondAttribute="trailing" id="2Nv-Tv-rzU"/>
+                            <constraint firstItem="157-GM-09n" firstAttribute="trailing" secondItem="WE3-jF-1DN" secondAttribute="trailing" constant="24" id="HYV-fP-nd0"/>
+                            <constraint firstItem="WE3-jF-1DN" firstAttribute="centerY" secondItem="skc-ET-YSY" secondAttribute="centerY" id="MGv-fN-Bdd"/>
+                            <constraint firstItem="skc-ET-YSY" firstAttribute="leading" secondItem="157-GM-09n" secondAttribute="leading" constant="16" id="PEy-xF-bSt"/>
+                            <constraint firstItem="WE3-jF-1DN" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="skc-ET-YSY" secondAttribute="trailing" constant="8" symbolic="YES" id="PPJ-3X-uS9"/>
+                            <constraint firstItem="MP9-VK-0J2" firstAttribute="top" secondItem="157-GM-09n" secondAttribute="top" constant="110" id="PRO-Mr-caz"/>
+                            <constraint firstItem="LkW-qf-L4d" firstAttribute="top" secondItem="WVG-7M-TaY" secondAttribute="bottom" constant="8" id="Ug8-rQ-ozT"/>
+                            <constraint firstItem="MP9-VK-0J2" firstAttribute="leading" secondItem="157-GM-09n" secondAttribute="leading" constant="16" id="YfG-68-ajt"/>
+                            <constraint firstItem="LkW-qf-L4d" firstAttribute="leading" secondItem="157-GM-09n" secondAttribute="leading" constant="16" id="fvh-s1-6Av"/>
+                            <constraint firstItem="LkW-qf-L4d" firstAttribute="trailing" secondItem="MP9-VK-0J2" secondAttribute="trailing" id="meY-ed-by3"/>
+                            <constraint firstItem="skc-ET-YSY" firstAttribute="top" secondItem="157-GM-09n" secondAttribute="top" constant="32" id="o8D-Wq-dBa"/>
+                            <constraint firstItem="WVG-7M-TaY" firstAttribute="top" secondItem="MP9-VK-0J2" secondAttribute="bottom" constant="8" id="um6-rR-TUG"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="avatarPhoto" destination="skc-ET-YSY" id="mz3-Va-QSm"/>
+                        <outlet property="descriptionProfile" destination="LkW-qf-L4d" id="CIZ-n0-zQf"/>
+                        <outlet property="exitButton" destination="WE3-jF-1DN" id="kNC-kW-t8F"/>
+                        <outlet property="mailProfile" destination="WVG-7M-TaY" id="y3H-lV-Iis"/>
+                        <outlet property="profileName" destination="MP9-VK-0J2" id="FT7-I7-AMn"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="33o-sp-s74" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1541" y="-43"/>
+        </scene>
     </scenes>
     <resources>
         <image name="0" width="1600" height="1059"/>
+        <image name="AvatarPhoto" width="70" height="70"/>
+        <image name="Exit" width="24" height="24"/>
         <image name="like_button_on" width="42" height="42"/>
         <namedColor name="Background">
             <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="WhiteText">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="mailText">
+            <color red="0.68235294117647061" green="0.68627450980392157" blue="0.70588235294117652" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
