@@ -39,6 +39,8 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
+        setupGradientView(imageListCell)
+        
         configCell(for: imageListCell, with: indexPath)
         
         return imageListCell
@@ -57,7 +59,7 @@ private extension ImagesListViewController {
         let isLiked = indexPath.row % 2 == 0
         let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
         cell.likeButton.setImage(likeImage, for: .normal)
-        setupGradientView(cell)
+
     }
     
     func setupGradientView(_ cell: ImagesListCell) {
