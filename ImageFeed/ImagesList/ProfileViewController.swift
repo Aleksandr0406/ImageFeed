@@ -8,14 +8,13 @@
 import Foundation
 import UIKit
 
-class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController {
+    @IBOutlet private var profileName: UILabel!
+    @IBOutlet private var descriptionProfile: UILabel!
+    @IBOutlet private var mailProfile: UILabel!
+    @IBOutlet private var exitButton: UIButton!
+    @IBOutlet private var avatarPhoto: UIImageView!
     
-    @IBOutlet weak var profileName: UILabel!
-    @IBOutlet weak var descriptionProfile: UILabel!
-    @IBOutlet weak var mailProfile: UILabel!
-    @IBOutlet weak var exitButton: UIButton!
-    @IBOutlet weak var avatarPhoto: UIImageView!
-    
-    @IBAction func exitButton(_ sender: Any) {
+    @IBAction private func exitButton(_ sender: Any) {
     }
 }
