@@ -98,7 +98,7 @@
                             <constraint firstAttribute="trailing" secondItem="yU6-Hh-nU1" secondAttribute="trailing" id="hqn-ic-SOp"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" image="tab_editorial_active" id="L3a-8V-7kC"/>
+                    <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="L3a-8V-7kC"/>
                     <navigationItem key="navigationItem" id="mjy-RX-KeU"/>
                     <connections>
                         <outlet property="tableView" destination="yU6-Hh-nU1" id="Txw-ee-14V"/>
