@@ -77,15 +77,15 @@ private extension ImagesListViewController {
         cell.dateLabel.text = dateFormatter.string(from: currentDate)
         
         let isLiked = indexPath.row % 2 == 0
-        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+        let likeImage = isLiked ? UIImage(named: "Like_button_on") : UIImage(named: "Like_button_off")
         cell.likeButton.setImage(likeImage, for: .normal)
         
     }
     
     func setupGradientView(_ cell: ImagesListCell) {
         let gradient = CAGradientLayer()
-        let colorTop = UIColor.blackGradientTop
-        let colorBottom = UIColor.blackGradientBottom
+        guard let colorTop: UIColor = UIColor(named: "BlackGradientTop") else { return }
+        guard let colorBottom: UIColor = UIColor(named: "BlackGradientBottom") else { return }
         
         gradient.colors = [colorTop, colorBottom]
         gradient.frame = cell.gradientView.bounds
