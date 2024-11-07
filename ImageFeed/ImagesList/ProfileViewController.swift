@@ -56,7 +56,7 @@ final class ProfileViewController: UIViewController {
     private func createMailProfile() {
         mailProfile = UILabel()
         mailProfile.text = "@catlea"
-        mailProfile.textColor = UIColor(named: "MailText")
+        mailProfile.textColor = UIColor(named: "MailProfile")
         mailProfile.font = .systemFont(ofSize: 13)
         
         mailProfile.translatesAutoresizingMaskIntoConstraints = false
