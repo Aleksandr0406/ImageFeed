@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "A610DBC6-C51A-4FD4-99E2-7D337ADBD663.jpg",
+      "filename" : "No Active.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "like_button_off@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "like_button_off@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

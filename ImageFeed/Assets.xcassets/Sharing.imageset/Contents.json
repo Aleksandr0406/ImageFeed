@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "A610DBC6-C51A-4FD4-99E2-7D337ADBD663.jpg",
+      "filename" : "Sharing.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "Сircle-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "Сircle-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
