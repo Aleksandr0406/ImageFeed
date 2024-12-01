@@ -9,23 +9,22 @@ import Foundation
 import UIKit
 
 final class AuthViewController: UIViewController {
-    private let identifier = "ShowWebView"
-    private var oAuth2TokenStorage = OAuth2TokenStorage()
+    private let identifierForSegue = "ShowWebView"
+    private let oAuth2TokenStorage = OAuth2TokenStorage()
     
-    var delegate: AuthViewControllerDelegate?
+    weak var delegate: AuthViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         configureBackButton()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == identifier {
+        if segue.identifier == identifierForSegue {
             guard
                 let webViewViewController = segue.destination as? WebViewViewController
             else {
-                assertionFailure("Failed to prepare for \(identifier)")
+                assertionFailure("Failed to prepare for \(identifierForSegue)")
                 return
             }
             webViewViewController.delegate = self

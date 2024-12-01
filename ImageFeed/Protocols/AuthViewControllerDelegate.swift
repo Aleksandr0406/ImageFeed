@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol AuthViewControllerDelegate {
+protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController, didAuthenticateWithCode code: String)
 }
