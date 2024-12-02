@@ -10,7 +10,6 @@ import UIKit
 
 final class AuthViewController: UIViewController {
     private let identifierForSegue = "ShowWebView"
-    private let oAuth2TokenStorage = OAuth2TokenStorage()
     
     weak var delegate: AuthViewControllerDelegate?
     
