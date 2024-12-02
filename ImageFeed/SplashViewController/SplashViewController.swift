@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 final class SplashViewController: UIViewController {
-    private let identifier = "ShowAuthorization"
+    private let identifierForSegueToAuth = "ShowAuthorization"
     
     private let storage = OAuth2TokenStorage()
     
@@ -19,7 +19,7 @@ final class SplashViewController: UIViewController {
         if storage.token != nil {
             switchToTabBarController()
         } else {
-            performSegue(withIdentifier: identifier, sender: nil)
+            performSegue(withIdentifier: identifierForSegueToAuth, sender: nil)
         }
     }
     
@@ -43,12 +43,12 @@ final class SplashViewController: UIViewController {
 
 extension SplashViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == identifier {
+        if segue.identifier == identifierForSegueToAuth {
             guard
                 let navigationController = segue.destination as? UINavigationController,
                 let viewController = navigationController.viewControllers[0] as? AuthViewController
             else {
-                assertionFailure("Failed to prepare for \(identifier)")
+                assertionFailure("Failed to prepare for \(identifierForSegueToAuth)")
                 return
             }
             
