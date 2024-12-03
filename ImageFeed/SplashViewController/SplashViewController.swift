@@ -62,7 +62,7 @@ extension SplashViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
         dismiss(animated: true) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.fetchOAuthToken(code)
         }
     }
@@ -73,7 +73,6 @@ extension SplashViewController: AuthViewControllerDelegate {
             switch result {
             case .success(let data):
                 storage.token = data
-                print("LIT", storage.token!)
                 self.switchToTabBarController()
             case .failure:
                 print("Error fetch token")
