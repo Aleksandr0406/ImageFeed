@@ -26,7 +26,7 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func didTapExitButton() {
-        // TODO: добавить потом логику
+        //TODO: добавить потом логику
     }
     
     private func createProfileImage() {
