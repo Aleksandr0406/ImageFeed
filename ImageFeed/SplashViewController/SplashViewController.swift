@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import ProgressHUD
 
 final class SplashViewController: UIViewController {
     private let identifierForSegueToAuth = "ShowAuthorization"
@@ -51,7 +52,6 @@ extension SplashViewController {
                 assertionFailure("Failed to prepare for \(identifierForSegueToAuth)")
                 return
             }
-            
             viewController.delegate = self
         } else {
             super.prepare(for: segue, sender: sender)
@@ -70,6 +70,9 @@ extension SplashViewController: AuthViewControllerDelegate {
     private func fetchOAuthToken(_ code: String) {
         OAuth2Service.shared.fetchOAuthToken(code) { [weak self] result in
             guard let self else { return }
+            
+            UIBlockingProgressHUD.dismiss()
+            
             switch result {
             case .success(let data):
                 storage.token = data

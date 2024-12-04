@@ -9,33 +9,34 @@ import Foundation
 import UIKit
 
 final class OAuth2Service {
+    private let urlSession = URLSession.shared
+    
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    
     static let shared = OAuth2Service()
     private init() {}
     
-    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
-        guard let baseURL = URL(string: "https://unsplash.com"),
-           let url = URL(
-            string: "/oauth/token"
-            + "?client_id=\(Constants.accessKey)"
-            + "&&client_secret=\(Constants.secretKey)"
-            + "&&redirect_uri=\(Constants.redirectURI)"
-            + "&&code=\(code)"
-            + "&&grant_type=authorization_code",
-            relativeTo: baseURL
-           ) else { return nil }
-        
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            return request
-    }
-    
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+        guard lastCode != code else {
+            completion(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+
+        task?.cancel()
+        lastCode = code
+        
+        lastCode = code
+        
         guard let makeOAuthTokenRequest = makeOAuthTokenRequest(code: code) else {
             print("Error makeTokenRequest")
+            completion(.failure(AuthServiceError.invalidRequest))
             return
         }
         
-        let task = URLSession.shared.data(for: makeOAuthTokenRequest) { result in
+        let task = urlSession.data(for: makeOAuthTokenRequest) { result in
             switch result {
             case .success(let data):
                 do {
@@ -51,8 +52,31 @@ final class OAuth2Service {
                 print("Error receiving data")
                 completion(.failure(error))
             }
+            self.task = nil
+            self.lastCode = nil
         }
         
+        self.task = task
         task.resume()
+    }
+    
+    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
+        guard let baseURL = URL(string: "https://unsplash.com"),
+              let url = URL(
+                string: "/oauth/token"
+                + "?client_id=\(Constants.accessKey)"
+                + "&&client_secret=\(Constants.secretKey)"
+                + "&&redirect_uri=\(Constants.redirectURI)"
+                + "&&code=\(code)"
+                + "&&grant_type=authorization_code",
+                relativeTo: baseURL
+              ) else {
+            assertionFailure("Failed to create URL")
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        return request
     }
 }
