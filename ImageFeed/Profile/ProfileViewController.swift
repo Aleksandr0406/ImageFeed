@@ -9,6 +9,9 @@ import Foundation
 import UIKit
 
 final class ProfileViewController: UIViewController {
+    private let storage = OAuth2TokenStorage()
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     private var avatarPhoto: UIImageView = UIImageView()
     private var profileName: UILabel = UILabel()
     private var mailProfile: UILabel = UILabel()
@@ -18,11 +21,30 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+        
         createProfileImage()
         createProfileName()
         createMailProfile()
         createDescriptionProfile()
         createExitButton()
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
     }
     
     @objc private func didTapExitButton() {
@@ -42,7 +64,7 @@ final class ProfileViewController: UIViewController {
     
     private func createProfileName(){
         profileName = UILabel()
-        profileName.text = "Лея"
+        profileName.text = ProfileService.shared.profile?.first_name
         profileName.textColor = UIColor(named: "WhiteText")
         profileName.font = .boldSystemFont(ofSize: 23)
         
@@ -55,7 +77,7 @@ final class ProfileViewController: UIViewController {
     
     private func createMailProfile() {
         mailProfile = UILabel()
-        mailProfile.text = "@catlea"
+        mailProfile.text = ProfileService.shared.profile?.username
         mailProfile.textColor = UIColor(named: "MailProfile")
         mailProfile.font = .systemFont(ofSize: 13)
         
@@ -69,7 +91,7 @@ final class ProfileViewController: UIViewController {
     
     private func createDescriptionProfile() {
         descriptionProfile = UILabel()
-        descriptionProfile.text = "Meow, world!"
+        descriptionProfile.text = ProfileService.shared.profile?.bio
         descriptionProfile.textColor = UIColor(named: "WhiteText")
         descriptionProfile.font = .systemFont(ofSize: 13)
         

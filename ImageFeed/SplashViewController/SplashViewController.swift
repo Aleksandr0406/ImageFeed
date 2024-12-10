@@ -10,6 +10,7 @@ import UIKit
 import ProgressHUD
 
 final class SplashViewController: UIViewController {
+    private let profileService = ProfileService.shared
     private let identifierForSegueToAuth = "ShowAuthorization"
     
     private let storage = OAuth2TokenStorage()
@@ -18,7 +19,10 @@ final class SplashViewController: UIViewController {
         super.viewDidAppear(animated)
         
         if storage.token != nil {
-            switchToTabBarController()
+            guard let token = storage.token else { return }
+            
+            fetchProfile(token)
+            //fetchProfileImageURL(token)
         } else {
             performSegue(withIdentifier: identifierForSegueToAuth, sender: nil)
         }
@@ -61,7 +65,7 @@ extension SplashViewController {
 
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
-        dismiss(animated: true) { [weak self] in
+        vc.dismiss(animated: true) { [weak self] in
             guard let self else { return }
             self.fetchOAuthToken(code)
         }
@@ -69,14 +73,69 @@ extension SplashViewController: AuthViewControllerDelegate {
     
     private func fetchOAuthToken(_ code: String) {
         OAuth2Service.shared.fetchOAuthToken(code) { [weak self] result in
+            //            guard let self else { return }
+            //
+            //            UIBlockingProgressHUD.dismiss()
+            //
+            //            switch result {
+            //            case .success(let data):
+            //                storage.token = data
+            //                guard let token = storage.token else { return }
+            //                self.fetchProfile(token)
+            //            case .failure:
+            //                print("Error fetch token")
+            //                break
+            //            }
             guard let self else { return }
             
+            switch result {
+            case .success(let token):
+                storage.token = token
+                fetchProfile(token)
+            case .failure:
+                print("Error fetch token")
+                break
+            }
+        }
+    }
+    
+    private func fetchProfile(_ token: String) {
+        UIBlockingProgressHUD.show()
+        profileService.fetchProfile(token, Constants.urlComponentToBaseProfile) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
+            
+            guard let self else { return }
+            
+            switch result {
+            case .success(let response):
+                profileService.profile = response
+                guard let username = response.username else { return }
+                self.fetchProfileImageURL(token, username)
+                self.switchToTabBarController()
+            case .failure:
+                print("Error fetch token")
+                break
+            }
+        }
+    }
+    
+    private func fetchProfileImageURL(_ token: String, _ username: String) {
+        ProfileImageService.shared.fetchProfileImageURL(token, Constants.urlComponentToPublicProfile, username) {
+            [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self else { return }
             
             switch result {
             case .success(let data):
-                storage.token = data
-                self.switchToTabBarController()
+                guard let avatarURL = data.profile_Image?.small else { return }
+                ProfileImageService.shared.avatarURL = avatarURL
+                
+                NotificationCenter.default
+                    .post(
+                        name: ProfileImageService.didChangeNotification,
+                        object: self,
+                        userInfo: ["URL": avatarURL])
             case .failure:
                 print("Error fetch token")
                 break

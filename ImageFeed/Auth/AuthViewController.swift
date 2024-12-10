@@ -23,6 +23,7 @@ final class AuthViewController: UIViewController {
         if segue.identifier == identifierForSegue {
             guard let webViewViewController = segue.destination as? WebViewViewController else
             {
+                print("lit error")
                 assertionFailure("Failed to prepare for \(identifierForSegue)")
                 return
             }

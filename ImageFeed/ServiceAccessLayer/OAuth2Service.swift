@@ -10,6 +10,7 @@ import UIKit
 
 final class OAuth2Service {
     private let urlSession = URLSession.shared
+    private let storage = OAuth2TokenStorage()
     
     private var task: URLSessionTask?
     private var lastCode: String?
@@ -24,10 +25,8 @@ final class OAuth2Service {
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
-
-        task?.cancel()
-        lastCode = code
         
+        task?.cancel()
         lastCode = code
         
         guard let makeOAuthTokenRequest = makeOAuthTokenRequest(code: code) else {
@@ -36,27 +35,39 @@ final class OAuth2Service {
             return
         }
         
-        let task = urlSession.data(for: makeOAuthTokenRequest) { result in
+        let task = urlSession.objectTask(for: makeOAuthTokenRequest) { [weak self] (result: Result<OAuthTokenResponseBody, Error>)  in
+            //            switch result {
+            //            case .success(let data):
+            //                do {
+            //                    let decoder = JSONDecoder()
+            //                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+            //                    let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+            //                    completion(.success(response.accessToken))
+            //                } catch {
+            //                    print("Error decoding data")
+            //                    completion(.failure(error))
+            //                }
+            //            case .failure(let error):
+            //                print("Error receiving data")
+            //                completion(.failure(error))
+            //            }
+            guard self != nil else { return }
+            
+            UIBlockingProgressHUD.dismiss()
+            
             switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    completion(.success(response.accessToken))
-                } catch {
-                    print("Error decoding data")
-                    completion(.failure(error))
-                }
-            case .failure(let error):
-                print("Error receiving data")
-                completion(.failure(error))
+            case .success(let response):
+                //storage.token = response.accessToken
+                let token = response.accessToken
+                completion(.success(token))
+            case .failure:
+                print("Error fetch token in task")
+                break
             }
-            self.task = nil
-            self.lastCode = nil
         }
+        self.task = nil
+        self.lastCode = nil
         
-        self.task = task
         task.resume()
     }
     
