@@ -7,9 +7,10 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
-    private let storage = OAuth2TokenStorage()
+    //private let storage = OAuth2TokenStorage()
     private var profileImageServiceObserver: NSObjectProtocol?
     
     private var avatarPhoto: UIImageView = UIImageView()
@@ -30,21 +31,14 @@ final class ProfileViewController: UIViewController {
                 guard let self else { return }
                 self.updateAvatar()
             }
-        updateAvatar()
         
         createProfileImage()
         createProfileName()
         createMailProfile()
         createDescriptionProfile()
         createExitButton()
-    }
-    
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
-        else { return }
-        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+        
+        updateAvatar()
     }
     
     @objc private func didTapExitButton() {
@@ -52,14 +46,18 @@ final class ProfileViewController: UIViewController {
     }
     
     private func createProfileImage() {
-        let profileImage = UIImage(named: "AlternativeAvatarPhoto")
-        avatarPhoto = UIImageView(image: profileImage)
+        avatarPhoto = UIImageView()
+        avatarPhoto.image = UIImage(named: "AlternativeAvatarPhoto")
+        //avatarPhoto.backgroundColor = UIColor(named: "Background")
+        //avatarPhoto.contentMode = .scaleAspectFill
         
         avatarPhoto.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(avatarPhoto)
+        self.view.addSubview(avatarPhoto)
         
-        avatarPhoto.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        avatarPhoto.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
+        avatarPhoto.widthAnchor.constraint(equalToConstant: 70).isActive = true
+        avatarPhoto.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        avatarPhoto.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16).isActive = true
+        avatarPhoto.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
     }
     
     private func createProfileName(){
@@ -69,9 +67,9 @@ final class ProfileViewController: UIViewController {
         profileName.font = .boldSystemFont(ofSize: 23)
         
         profileName.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(profileName)
+        self.view.addSubview(profileName)
         
-        profileName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        profileName.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16).isActive = true
         profileName.topAnchor.constraint(equalTo: avatarPhoto.bottomAnchor, constant: 8).isActive = true
     }
     
@@ -82,9 +80,9 @@ final class ProfileViewController: UIViewController {
         mailProfile.font = .systemFont(ofSize: 13)
         
         mailProfile.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(mailProfile)
+        self.view.addSubview(mailProfile)
         
-        mailProfile.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        mailProfile.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16).isActive = true
         mailProfile.topAnchor.constraint(equalTo: profileName.bottomAnchor, constant: 8).isActive = true
         mailProfile.heightAnchor.constraint(equalToConstant: 18).isActive = true
     }
@@ -96,9 +94,9 @@ final class ProfileViewController: UIViewController {
         descriptionProfile.font = .systemFont(ofSize: 13)
         
         descriptionProfile.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(descriptionProfile)
+        self.view.addSubview(descriptionProfile)
         
-        descriptionProfile.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        descriptionProfile.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16).isActive = true
         descriptionProfile.topAnchor.constraint(equalTo: mailProfile.bottomAnchor, constant: 8).isActive = true
     }
     
@@ -108,10 +106,42 @@ final class ProfileViewController: UIViewController {
         exitButton.tintColor = UIColor(named: "LikeButtonColor")
         
         exitButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(exitButton)
+        self.view.addSubview(exitButton)
         
         exitButton.contentMode = .center
-        exitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
+        exitButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -24).isActive = true
         exitButton.centerYAnchor.constraint(equalTo: avatarPhoto.centerYAnchor).isActive = true
+    }
+    
+    private func updateAvatar() {
+        //let cache = ImageCache.default
+        //cache.diskStorage.config.sizeLimit = 1000 * 1000 * 1000
+        //cache.clearMemoryCache()
+        //cache.clearDiskCache()
+        
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let imageURL = URL(string: profileImageURL)
+                
+        else {
+            print("ProfileViewController: stroke 122-123 Cant rewrite imageURL into profileImageURL")
+            return
+        }
+        
+        print(profileImageURL)
+        
+        let processor = DownsamplingImageProcessor(size: avatarPhoto.bounds.size)
+        |> RoundCornerImageProcessor(cornerRadius: 20)
+        //avatarPhoto.kf.indicatorType = .activity
+        avatarPhoto.kf.setImage(
+            with: imageURL,
+            placeholder: UIImage(named: "Placeholder"),
+            options: [
+                .processor(processor),
+                .scaleFactor(UIScreen.main.scale),
+                .transition(.fade(1)),
+                .cacheOriginalImage,
+            ])
+       
     }
 }

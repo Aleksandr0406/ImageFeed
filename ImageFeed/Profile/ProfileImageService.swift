@@ -19,14 +19,17 @@ final class ProfileImageService {
         assert(Thread.isMainThread)
         
         guard let makeRequestToProfileImage = makeRequestToProfileImage(token, urlComponent, username) else {
-            print("Error make profile request")
+            print("ProfileImageService: stroke 21 Error make profile request")
             return
         }
         
         let task = URLSession.shared.objectTask(for: makeRequestToProfileImage) { [weak self] (result: Result<ProfileResult, Error>) in
             UIBlockingProgressHUD.dismiss()
             
-            guard self != nil else { return }
+            guard self != nil else {
+                print("ProfileImageService: sroke 29")
+                return
+            }
             
             switch result {
             case .success(let data):
@@ -44,6 +47,7 @@ final class ProfileImageService {
     private func makeRequestToProfileImage(_ authToken: String, _ urlComponent: String, _ username: String) -> URLRequest? {
         //guard let url = URL(string: urlComponent + username, relativeTo: Constants.defaultBaseURL) else {
         guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
+            print("ProfileImageService: stroke 49")
             assertionFailure("Failed to create URL")
             return nil
         }

@@ -6,3 +6,36 @@
 //
 
 import Foundation
+import UIKit
+
+class AlertPresenter: AlertPresenterProtocol {
+    
+    weak var delegate: AuthViewController?
+    
+    func presentAlert() {
+        guard let delegate = delegate
+        else {
+            print("AlertPresenter: Cant rewrite delegate into delegate")
+            return
+        }
+        
+        let alert = UIAlertController(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        
+        let action = UIAlertAction(
+            title: "Ok",
+            style: .default
+        ) { [weak self] _ in
+            guard self != nil else {
+                print("AlertPresenter: 32 stroke")
+                return
+            }
+        }
+        
+        alert.addAction(action)
+        delegate.present(alert, animated: true, completion: nil)
+    }
+}

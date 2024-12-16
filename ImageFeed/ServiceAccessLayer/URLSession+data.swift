@@ -21,14 +21,14 @@ extension URLSession {
                     if 200..<300 ~= statusCode {
                         fulfillCompletionOnMainThread(.success(data))
                     } else {
-                        print("NetworkError StatusCode")
+                        print("URLSession: NetworkError StatusCode:", statusCode)
                         fulfillCompletionOnMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
                     }
                 } else if let error = error {
-                    print("NetworkError urlRequestError")
+                    print("URLSession: NetworkError urlRequestError")
                     fulfillCompletionOnMainThread(.failure(NetworkError.urlRequestError(error)))
                 } else {
-                    print("NetworkError urlSessionError")
+                    print("URLSession: NetworkError urlSessionError")
                     fulfillCompletionOnMainThread(.failure(NetworkError.urlSessionError))
                 }
             })
@@ -42,21 +42,21 @@ extension URLSession {
         for request: URLRequest,
         completion: @escaping (Result<T, Error>) -> Void
     ) -> URLSessionTask {
-        //let decoder = JSONDecoder()
-        //decoder.keyDecodingStrategy = .convertFromSnakeCase
         let task = data(for: request) { (result: Result<Data, Error>) in
             switch result {
             case .success(let data):
                 do {
                     let decoder = JSONDecoder()
+                    //decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    
                     let response = try decoder.decode(T.self, from: data)
                     completion(.success(response))
                 } catch {
-                    print("Error decoding data")
+                    print("URLSession: catch stroke 52 Error decoding data in func objectTask: \(error.localizedDescription), data: \(String(data: data, encoding: .utf8) ?? "")")
                     completion(.failure(error))
                 }
             case .failure(let error):
-                print("Error receiving data")
+                print("URLSession: stroke 58 Error receiving data in func objectTask")
                 completion(.failure(error))
             }
         }

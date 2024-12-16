@@ -18,14 +18,17 @@ final class ProfileService {
         assert(Thread.isMainThread)
         
         guard let makeRequestToProfile = makeRequestToProfile(token, urlComponent) else {
-            print("Error make profile request")
+            print("ProfileService: stroke 20 Error make profile request")
             return
         }
         
         let task = URLSession.shared.objectTask(for: makeRequestToProfile) { [weak self] (result: Result<ProfileResult, Error>) in
             UIBlockingProgressHUD.dismiss()
             
-            guard self != nil else { return }
+            guard self != nil else {
+                print("ProfileService: stroke 28")
+                return
+            }
             
             switch result {
             case .success(let data):
@@ -44,6 +47,7 @@ final class ProfileService {
             string: urlComponent,
             relativeTo: Constants.defaultBaseURL
         ) else {
+            print("ProfileService: stroke 46-48")
             assertionFailure("Failed to create URL")
             return nil
         }

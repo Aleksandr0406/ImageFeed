@@ -33,6 +33,7 @@ final class ImagesListViewController: UIViewController {
                 let viewController = segue.destination as? SingleImageViewController,
                 let indexPath = sender as? IndexPath
             else {
+                print("ImagesListViewController: stroke 33-34")
                 assertionFailure("Invalid segue destination")
                 return
             }
@@ -55,7 +56,7 @@ extension ImagesListViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
         
         guard let imageListCell = cell as? ImagesListCell else {
-            print("Не смогли привести к необходимому типу")
+            print("ImagesListViewController: stroke 58 Не смогли привести к необходимому типу")
             return UITableViewCell()
         }
         
@@ -70,6 +71,7 @@ extension ImagesListViewController: UITableViewDataSource {
 private extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
+            print("ImagesListViewController: stroke 73")
             return
         }
         
@@ -84,8 +86,11 @@ private extension ImagesListViewController {
     
     func setupGradientView(_ cell: ImagesListCell) {
         let gradient = CAGradientLayer()
-        guard let colorTop: UIColor = UIColor(named: "BlackGradientTop") else { return }
-        guard let colorBottom: UIColor = UIColor(named: "BlackGradientBottom") else { return }
+        guard let colorTop: UIColor = UIColor(named: "BlackGradientTop"),
+              let colorBottom: UIColor = UIColor(named: "BlackGradientBottom") else {
+            print("ImagesListViewController: stroke 89-90")
+            return
+        }
         
         gradient.colors = [colorTop, colorBottom]
         gradient.frame = cell.gradientView.bounds
@@ -100,6 +105,7 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
+            print("ImagesListViewController: stroke 107")
             return 0
         }
         

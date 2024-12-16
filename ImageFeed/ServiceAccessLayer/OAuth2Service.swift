@@ -10,7 +10,8 @@ import UIKit
 
 final class OAuth2Service {
     private let urlSession = URLSession.shared
-    private let storage = OAuth2TokenStorage()
+    //private let storage = OAuth2TokenStorage()
+    private let authViewController: (AuthViewControllerProtocol)? = AuthViewController()
     
     private var task: URLSessionTask?
     private var lastCode: String?
@@ -22,6 +23,7 @@ final class OAuth2Service {
         assert(Thread.isMainThread)
         
         guard lastCode != code else {
+            print("OAuth2Service: stroke 25")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
@@ -30,38 +32,26 @@ final class OAuth2Service {
         lastCode = code
         
         guard let makeOAuthTokenRequest = makeOAuthTokenRequest(code: code) else {
-            print("Error makeTokenRequest")
+            print("OAuth2Service: stroke 34 Error makeTokenRequest")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
         
         let task = urlSession.objectTask(for: makeOAuthTokenRequest) { [weak self] (result: Result<OAuthTokenResponseBody, Error>)  in
-            //            switch result {
-            //            case .success(let data):
-            //                do {
-            //                    let decoder = JSONDecoder()
-            //                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-            //                    let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-            //                    completion(.success(response.accessToken))
-            //                } catch {
-            //                    print("Error decoding data")
-            //                    completion(.failure(error))
-            //                }
-            //            case .failure(let error):
-            //                print("Error receiving data")
-            //                completion(.failure(error))
-            //            }
-            guard self != nil else { return }
+            guard self != nil else {
+                print("OAuth2Service: stroke 41")
+                return
+            }
             
             UIBlockingProgressHUD.dismiss()
             
             switch result {
             case .success(let response):
-                //storage.token = response.accessToken
-                let token = response.accessToken
+                let token = response.access_token
                 completion(.success(token))
             case .failure:
                 print("Error fetch token in task")
+                self?.authViewController?.showAlert()
                 break
             }
         }
@@ -82,6 +72,7 @@ final class OAuth2Service {
                 + "&&grant_type=authorization_code",
                 relativeTo: baseURL
               ) else {
+            print("OAuth2Service: stroke 65-73")
             assertionFailure("Failed to create URL")
             return nil
         }
