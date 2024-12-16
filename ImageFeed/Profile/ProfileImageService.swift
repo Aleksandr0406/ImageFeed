@@ -23,28 +23,27 @@ final class ProfileImageService {
             return
         }
         
-        let task = URLSession.shared.data(for: makeRequestToProfileImage) { result in
+        let task = URLSession.shared.objectTask(for: makeRequestToProfileImage) { [weak self] (result: Result<ProfileResult, Error>) in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard self != nil else { return }
+            
             switch result {
             case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    let response = try decoder.decode(ProfileResult.self, from: data)
-                    completion(.success(response))
-                } catch {
-                    print("Error decoding data")
-                    completion(.failure(error))
-                }
-            case .failure(let error):
-                print("Error receiving data")
-                completion(.failure(error))
+                completion(.success(data))
+            case .failure:
+                print("Error pushing data in ProfileImageService")
+                break
             }
         }
         
         task.resume()
     }
     
+    
     private func makeRequestToProfileImage(_ authToken: String, _ urlComponent: String, _ username: String) -> URLRequest? {
-        guard let url = URL(string: urlComponent + username,relativeTo: Constants.defaultBaseURL) else {
+        //guard let url = URL(string: urlComponent + username, relativeTo: Constants.defaultBaseURL) else {
+        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
             assertionFailure("Failed to create URL")
             return nil
         }
@@ -56,8 +55,4 @@ final class ProfileImageService {
     }
 }
 
-struct UserResult: Codable {
-    let small: String?
-    let medium: String?
-    let large: String?
-}
+

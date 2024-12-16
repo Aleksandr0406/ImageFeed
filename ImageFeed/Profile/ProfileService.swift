@@ -22,21 +22,17 @@ final class ProfileService {
             return
         }
         
-        let task = URLSession.shared.data(for: makeRequestToProfile) { result in
+        let task = URLSession.shared.objectTask(for: makeRequestToProfile) { [weak self] (result: Result<ProfileResult, Error>) in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard self != nil else { return }
+            
             switch result {
             case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    //decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let response = try decoder.decode(ProfileResult.self, from: data)
-                    completion(.success(response))
-                } catch {
-                    print("Error decoding data")
-                    completion(.failure(error))
-                }
-            case .failure(let error):
-                print("Error receiving data")
-                completion(.failure(error))
+                completion(.success(data))
+            case .failure:
+                print("Error pushing data in ProfileService")
+                break
             }
         }
         
@@ -59,18 +55,4 @@ final class ProfileService {
     }
 }
 
-struct ProfileResult: Codable {
-    let username: String?
-    let first_name: String?
-    let last_name: String?
-    let bio: String?
-    let profile_Image: UserResult?
-}
-
-//struct Profile {
-//    private let username: String
-//    private let name: String
-//    private let loginName: String
-//    private let bio: String
-//}
 
