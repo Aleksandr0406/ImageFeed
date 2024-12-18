@@ -23,7 +23,6 @@ final class ImagesListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
     
@@ -33,6 +32,7 @@ final class ImagesListViewController: UIViewController {
                 let viewController = segue.destination as? SingleImageViewController,
                 let indexPath = sender as? IndexPath
             else {
+                print("ImagesListViewController: func prepare(...)")
                 assertionFailure("Invalid segue destination")
                 return
             }
@@ -55,7 +55,7 @@ extension ImagesListViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
         
         guard let imageListCell = cell as? ImagesListCell else {
-            print("Не смогли привести к необходимому типу")
+            print("ImagesListViewController: func tableView(...) Не смогли привести к необходимому типу")
             return UITableViewCell()
         }
         
@@ -70,6 +70,7 @@ extension ImagesListViewController: UITableViewDataSource {
 private extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
+            print("ImagesListViewController: func configCell(...)")
             return
         }
         
@@ -84,8 +85,11 @@ private extension ImagesListViewController {
     
     func setupGradientView(_ cell: ImagesListCell) {
         let gradient = CAGradientLayer()
-        guard let colorTop: UIColor = UIColor(named: "BlackGradientTop") else { return }
-        guard let colorBottom: UIColor = UIColor(named: "BlackGradientBottom") else { return }
+        guard let colorTop: UIColor = UIColor(named: "BlackGradientTop"),
+              let colorBottom: UIColor = UIColor(named: "BlackGradientBottom") else {
+            print("ImagesListViewController: func setupGradientView(...)")
+            return
+        }
         
         gradient.colors = [colorTop, colorBottom]
         gradient.frame = cell.gradientView.bounds
@@ -100,6 +104,7 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
+            print("ImagesListViewController: func tableView(...)")
             return 0
         }
         
