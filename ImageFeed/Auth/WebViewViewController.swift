@@ -10,7 +10,6 @@ import WebKit
 
 final class WebViewViewController: UIViewController {
     private var estimatedProgressObservation: NSKeyValueObservation?
-    private let authViewController: (AuthViewControllerProtocol)? = AuthViewController()
     
     @IBOutlet private var webView: WKWebView!
     @IBOutlet private var progressView: UIProgressView!
@@ -25,7 +24,7 @@ final class WebViewViewController: UIViewController {
              options: [],
              changeHandler: { [weak self] _, _ in
                  guard let self else {
-                     print("WebViewViewController: stroke 27")
+                     print("WebViewViewController: func viewDidLoad()")
                      return
                  }
                  self.updateProgress()
@@ -44,7 +43,7 @@ final class WebViewViewController: UIViewController {
     
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: Constants.unsplashAuthorizeURLString) else {
-            print("WebViewViewController: stroke 46")
+            print("WebViewViewController: func loadAuthView() 1")
             return
         }
         
@@ -56,7 +55,7 @@ final class WebViewViewController: UIViewController {
         ]
         
         guard let url = urlComponents.url else {
-            print("WebViewViewController: stroke 58")
+            print("WebViewViewController: func loadAuthView() 2")
             return
         }
         

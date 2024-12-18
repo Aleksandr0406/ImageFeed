@@ -10,7 +10,6 @@ import UIKit
 import Kingfisher
 
 final class ProfileViewController: UIViewController {
-    //private let storage = OAuth2TokenStorage()
     private var profileImageServiceObserver: NSObjectProtocol?
     
     private var avatarPhoto: UIImageView = UIImageView()
@@ -32,6 +31,8 @@ final class ProfileViewController: UIViewController {
                 self.updateAvatar()
             }
         
+        self.view.backgroundColor = UIColor(named: "Background")
+        
         createProfileImage()
         createProfileName()
         createMailProfile()
@@ -48,8 +49,6 @@ final class ProfileViewController: UIViewController {
     private func createProfileImage() {
         avatarPhoto = UIImageView()
         avatarPhoto.image = UIImage(named: "AlternativeAvatarPhoto")
-        //avatarPhoto.backgroundColor = UIColor(named: "Background")
-        //avatarPhoto.contentMode = .scaleAspectFill
         
         avatarPhoto.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(avatarPhoto)
@@ -62,7 +61,7 @@ final class ProfileViewController: UIViewController {
     
     private func createProfileName(){
         profileName = UILabel()
-        profileName.text = ProfileService.shared.profile?.first_name
+        profileName.text = ProfileService.shared.profile?.firstName
         profileName.textColor = UIColor(named: "WhiteText")
         profileName.font = .boldSystemFont(ofSize: 23)
         
@@ -101,8 +100,8 @@ final class ProfileViewController: UIViewController {
     }
     
     private func createExitButton() {
-        let imageButton = UIImage(named: "Exit")
-        exitButton = UIButton.systemButton(with: imageButton!, target: self, action: #selector(Self.didTapExitButton))
+        guard let imageButton = UIImage(named: "Exit") else { return }
+        exitButton = UIButton.systemButton(with: imageButton, target: self, action: #selector(Self.didTapExitButton))
         exitButton.tintColor = UIColor(named: "LikeButtonColor")
         
         exitButton.translatesAutoresizingMaskIntoConstraints = false
@@ -114,34 +113,28 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateAvatar() {
-        //let cache = ImageCache.default
-        //cache.diskStorage.config.sizeLimit = 1000 * 1000 * 1000
-        //cache.clearMemoryCache()
-        //cache.clearDiskCache()
-        
         guard
+            isViewLoaded,
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let imageURL = URL(string: profileImageURL)
                 
         else {
-            print("ProfileViewController: stroke 122-123 Cant rewrite imageURL into profileImageURL")
+            print("ProfileViewController: func updateAvatar() Cant rewrite imageURL into profileImageURL")
             return
         }
         
         print(profileImageURL)
         
+        avatarPhoto.kf.indicatorType = .activity
         let processor = DownsamplingImageProcessor(size: avatarPhoto.bounds.size)
-        |> RoundCornerImageProcessor(cornerRadius: 20)
-        //avatarPhoto.kf.indicatorType = .activity
+        |> RoundCornerImageProcessor(cornerRadius: 61)
         avatarPhoto.kf.setImage(
             with: imageURL,
             placeholder: UIImage(named: "Placeholder"),
             options: [
                 .processor(processor),
-                .scaleFactor(UIScreen.main.scale),
                 .transition(.fade(1)),
-                .cacheOriginalImage,
             ])
-       
+        
     }
 }

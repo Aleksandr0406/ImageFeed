@@ -11,15 +11,17 @@ final class ProfileImageService {
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProvideDidChange")
     static let shared = ProfileImageService()
     
+    private var task: URLSessionTask?
+    
     var avatarURL: String?
     
     private init() {}
     
-    func fetchProfileImageURL(_ username: String, _ token: String, _ urlComponent: String, _ completion: @escaping (Result<ProfileResult, Error>) -> Void) {
-        assert(Thread.isMainThread)
+    func fetchProfileImageURL(_ username: String, _ token: String, _ completion: @escaping (Result<ProfileResult, Error>) -> Void) {
+        task?.cancel()
         
-        guard let makeRequestToProfileImage = makeRequestToProfileImage(token, urlComponent, username) else {
-            print("ProfileImageService: stroke 21 Error make profile request")
+        guard let makeRequestToProfileImage = makeRequestToProfileImage(token, username) else {
+            print("ProfileImageService: func fetchProfileImageURL(...)/makeRequestToProfileImage Error make profile request")
             return
         }
         
@@ -27,7 +29,7 @@ final class ProfileImageService {
             UIBlockingProgressHUD.dismiss()
             
             guard self != nil else {
-                print("ProfileImageService: sroke 29")
+                print("ProfileImageService: func fetchProfileImageURL/URLSession.shared.objectTask")
                 return
             }
             
@@ -44,10 +46,9 @@ final class ProfileImageService {
     }
     
     
-    private func makeRequestToProfileImage(_ authToken: String, _ urlComponent: String, _ username: String) -> URLRequest? {
-        //guard let url = URL(string: urlComponent + username, relativeTo: Constants.defaultBaseURL) else {
+    private func makeRequestToProfileImage(_ authToken: String, _ username: String) -> URLRequest? {
         guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
-            print("ProfileImageService: stroke 49")
+            print("ProfileImageService: func makeRequestToProfileImage(...)")
             assertionFailure("Failed to create URL")
             return nil
         }

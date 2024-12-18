@@ -7,11 +7,9 @@
 
 import Foundation
 import UIKit
-import ProgressHUD
 
-final class AuthViewController: UIViewController, AuthViewControllerProtocol {
+final class AuthViewController: UIViewController {
     private let identifierForSegue = "ShowWebView"
-    private var alert: AlertPresenterProtocol?
     
     weak var delegate: AuthViewControllerDelegate?
     
@@ -23,7 +21,7 @@ final class AuthViewController: UIViewController, AuthViewControllerProtocol {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == identifierForSegue {
             guard let webViewViewController = segue.destination as? WebViewViewController else {
-                print("AuthViewController: sroke 25 lit error")
+                print("AuthViewController: func prepare(...)")
                 assertionFailure("Failed to prepare for \(identifierForSegue)")
                 return
             }
@@ -39,14 +37,6 @@ final class AuthViewController: UIViewController, AuthViewControllerProtocol {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(named: "Background")
     }
-    
-    func showAlert() {
-        let alert = AlertPresenter()
-        alert.delegate = self
-        self.alert = alert
-        
-        alert.presentAlert()
-    }
 }
 
 extension AuthViewController: WebViewViewControllerDelegate {
@@ -54,6 +44,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
         vc.dismiss(animated: true)
         
         UIBlockingProgressHUD.show()
+        print("AuthViewController: func webViewViewController(...)")
         
         delegate?.didAuthenticate(self, didAuthenticateWithCode: code)
     }

@@ -12,7 +12,7 @@ final class SingleImageViewController: UIViewController {
     var image: UIImage? {
         didSet {
             guard isViewLoaded, let image else {
-                print("SingleImageViewController: stroje 14")
+                print("SingleImageViewController: var image")
                 return
             }
             
@@ -31,7 +31,7 @@ final class SingleImageViewController: UIViewController {
         scrollView.maximumZoomScale = 1.25
         
         guard let image else {
-            print("SingleImageViewController: stroke 33")
+            print("SingleImageViewController: func viewDidLoad()")
             return
         }
         singleImage.image = image
@@ -46,7 +46,7 @@ final class SingleImageViewController: UIViewController {
     
     @IBAction private func didTapShareButton(_ sender: Any) {
         guard let image else {
-            print("SingleImageViewController: stroke 48")
+            print("SingleImageViewController: func didTapShareButton(...)")
             return
         }
         let share = UIActivityViewController(

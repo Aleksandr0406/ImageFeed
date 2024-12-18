@@ -47,16 +47,16 @@ extension URLSession {
             case .success(let data):
                 do {
                     let decoder = JSONDecoder()
-                    //decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
                     
                     let response = try decoder.decode(T.self, from: data)
                     completion(.success(response))
                 } catch {
-                    print("URLSession: catch stroke 52 Error decoding data in func objectTask: \(error.localizedDescription), data: \(String(data: data, encoding: .utf8) ?? "")")
+                    print("URLSession: catch Error decoding data in func objectTask: \(error.localizedDescription), data: \(String(data: data, encoding: .utf8) ?? "")")
                     completion(.failure(error))
                 }
             case .failure(let error):
-                print("URLSession: stroke 58 Error receiving data in func objectTask")
+                print("URLSession: Error receiving data in func objectTask")
                 completion(.failure(error))
             }
         }

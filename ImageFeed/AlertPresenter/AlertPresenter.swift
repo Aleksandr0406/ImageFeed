@@ -8,9 +8,9 @@
 import Foundation
 import UIKit
 
-class AlertPresenter: AlertPresenterProtocol {
+final class AlertPresenter {
     
-    weak var delegate: AuthViewController?
+    weak var delegate: UIViewController?
     
     func presentAlert() {
         guard let delegate = delegate
@@ -30,12 +30,12 @@ class AlertPresenter: AlertPresenterProtocol {
             style: .default
         ) { [weak self] _ in
             guard self != nil else {
-                print("AlertPresenter: 32 stroke")
+                print("AlertPresenter: action")
                 return
             }
         }
         
         alert.addAction(action)
-        delegate.present(alert, animated: true, completion: nil)
+        delegate.present(alert, animated: true)
     }
 }

@@ -10,15 +10,16 @@ import Foundation
 final class ProfileService {
     static let shared = ProfileService()
     
+    private var task: URLSessionTask?
     var profile: ProfileResult?
     
     private init() {}
     
-    func fetchProfile(_ token: String, _ urlComponent: String, completion: @escaping (Result<ProfileResult, Error>) -> Void) {
-        assert(Thread.isMainThread)
+    func fetchProfile(_ token: String, completion: @escaping (Result<ProfileResult, Error>) -> Void) {
+        task?.cancel()
         
-        guard let makeRequestToProfile = makeRequestToProfile(token, urlComponent) else {
-            print("ProfileService: stroke 20 Error make profile request")
+        guard let makeRequestToProfile = makeRequestToProfile(token) else {
+            print("ProfileService: func fetchProfile(...)/makeRequestToProfile Error make profile request")
             return
         }
         
@@ -26,28 +27,25 @@ final class ProfileService {
             UIBlockingProgressHUD.dismiss()
             
             guard self != nil else {
-                print("ProfileService: stroke 28")
+                print("ProfileService: func fetchProfile(...)/URLSession.shared.objectTask")
                 return
             }
             
             switch result {
             case .success(let data):
                 completion(.success(data))
-            case .failure:
+            case .failure(let error):
                 print("Error pushing data in ProfileService")
-                break
+                completion(.failure(error))
             }
         }
         
         task.resume()
     }
     
-    private func makeRequestToProfile(_ authToken: String, _ urlComponent: String) -> URLRequest? {
-        guard let url = URL(
-            string: urlComponent,
-            relativeTo: Constants.defaultBaseURL
-        ) else {
-            print("ProfileService: stroke 46-48")
+    private func makeRequestToProfile(_ authToken: String) -> URLRequest? {
+        guard let url = URL(string: "https://api.unsplash.com/me") else {
+            print("ProfileService: func makeRequestToProfile(...)")
             assertionFailure("Failed to create URL")
             return nil
         }
