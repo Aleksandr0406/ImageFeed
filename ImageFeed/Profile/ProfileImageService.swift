@@ -47,7 +47,8 @@ final class ProfileImageService {
     
     
     private func makeRequestToProfileImage(_ authToken: String, _ username: String) -> URLRequest? {
-        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
+//        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
+        guard let url = URL(string: Constants.defaultURL + "/users/" + username) else {
             print("ProfileImageService: func makeRequestToProfileImage(...)")
             assertionFailure("Failed to create URL")
             return nil

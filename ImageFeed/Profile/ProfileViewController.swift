@@ -18,6 +18,8 @@ final class ProfileViewController: UIViewController {
     private var descriptionProfile: UILabel = UILabel()
     private var exitButton: UIButton = UIButton()
     
+    private let profileService: ProfileService = ProfileService.shared
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,11 +59,13 @@ final class ProfileViewController: UIViewController {
         avatarPhoto.heightAnchor.constraint(equalToConstant: 70).isActive = true
         avatarPhoto.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16).isActive = true
         avatarPhoto.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
+        
+        self.view.layoutIfNeeded()
     }
     
     private func createProfileName(){
         profileName = UILabel()
-        profileName.text = ProfileService.shared.profile?.firstName
+        profileName.text = profileService.profile?.firstName
         profileName.textColor = UIColor(named: "WhiteText")
         profileName.font = .boldSystemFont(ofSize: 23)
         
@@ -74,7 +78,7 @@ final class ProfileViewController: UIViewController {
     
     private func createMailProfile() {
         mailProfile = UILabel()
-        mailProfile.text = ProfileService.shared.profile?.username
+        mailProfile.text = profileService.profile?.username
         mailProfile.textColor = UIColor(named: "MailProfile")
         mailProfile.font = .systemFont(ofSize: 13)
         
@@ -88,7 +92,7 @@ final class ProfileViewController: UIViewController {
     
     private func createDescriptionProfile() {
         descriptionProfile = UILabel()
-        descriptionProfile.text = ProfileService.shared.profile?.bio
+        descriptionProfile.text = profileService.profile?.bio
         descriptionProfile.textColor = UIColor(named: "WhiteText")
         descriptionProfile.font = .systemFont(ofSize: 13)
         

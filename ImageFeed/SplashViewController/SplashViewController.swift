@@ -35,8 +35,8 @@ final class SplashViewController: UIViewController {
     }
     
     private func checkAuthStatus() {
-        //      MARK: for testing -removing token from keychain
-        //        let removeSuccessful: Bool = KeychainWrapper.standard.removeObject(forKey: "Auth token")
+//        MARK: for testing -removing token from keychain
+//        let removeSuccessful: Bool = KeychainWrapper.standard.removeObject(forKey: "Auth token")
         
         guard !wasChecked else { return }
         wasChecked = true
