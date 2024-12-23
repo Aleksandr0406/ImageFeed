@@ -60,7 +60,7 @@ final class ProfileViewController: UIViewController {
         avatarPhoto.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16).isActive = true
         avatarPhoto.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
         
-        self.view.layoutIfNeeded()
+        view.layoutIfNeeded()
     }
     
     private func createProfileName(){
@@ -137,8 +137,7 @@ final class ProfileViewController: UIViewController {
             placeholder: UIImage(named: "Placeholder"),
             options: [
                 .processor(processor),
-                .transition(.fade(1)),
+                .transition(.fade(1))
             ])
-        
     }
 }
