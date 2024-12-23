@@ -119,7 +119,11 @@ extension SplashViewController: AuthViewControllerDelegate {
                 fetchProfile(token)
             case .failure:
                 print("SplashViewController: func fetchOAuthToken(...)/ case .failure Error fetch data token from OAuth2Service")
-                alert.presentAlert()
+                alert.presentAlert(alert: AlertViewModel(
+                    title: "Что-то пошло не так(",
+                    message: "Не удалось войти в систему",
+                    buttonText: "OK")
+                )
                 break
             }
         }
@@ -144,7 +148,11 @@ extension SplashViewController: AuthViewControllerDelegate {
             case .failure:
                 print("SplashViewController: func fetchProfile(...)/case .failure Error fetch data profile from ProfileService")
                 UIBlockingProgressHUD.dismiss()
-                alert.presentAlert()
+                alert.presentAlert(alert: AlertViewModel(
+                    title: "Что-то пошло не так(",
+                    message: "Не удалось войти в систему",
+                    buttonText: "OK")
+                )
             }
         }
     }

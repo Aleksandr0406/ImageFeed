@@ -12,7 +12,7 @@ final class AlertPresenter {
     
     weak var delegate: UIViewController?
     
-    func presentAlert() {
+    func presentAlert(alert data: AlertViewModel) {
         guard let delegate = delegate
         else {
             print("AlertPresenter: Cant rewrite delegate into delegate")
@@ -20,13 +20,13 @@ final class AlertPresenter {
         }
         
         let alert = UIAlertController(
-            title: "Что-то пошло не так(",
-            message: "Не удалось войти в систему",
+            title: data.title,
+            message: data.message,
             preferredStyle: .alert
         )
         
         let action = UIAlertAction(
-            title: "Ok",
+            title: data.buttonText,
             style: .default
         ) { [weak self] _ in
             guard self != nil else {

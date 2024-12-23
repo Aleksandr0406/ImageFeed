@@ -22,4 +22,6 @@ final class OAuth2TokenStorage {
             keychainWrapper.set(newValue, forKey: Constants.bearerToken)
         }
     }
+    
+    private init() {}
 }
