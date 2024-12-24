@@ -14,5 +14,5 @@ enum Constants {
     static let accessScope = "public+read_user+write_likes"
     static let defaultURL = "https://api.unsplash.com/"
     static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-    static let bearerToken = "Auth token"
+    static let bearerToken = "AuthToken"
 }

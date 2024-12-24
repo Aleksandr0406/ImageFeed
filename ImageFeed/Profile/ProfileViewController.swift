@@ -19,6 +19,7 @@ final class ProfileViewController: UIViewController {
     private var exitButton: UIButton = UIButton()
     
     private let profileService: ProfileService = ProfileService.shared
+    private let profileImageService: ProfileImageService = ProfileImageService.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,7 +120,7 @@ final class ProfileViewController: UIViewController {
     private func updateAvatar() {
         guard
             isViewLoaded,
-            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let profileImageURL = profileImageService.avatarURL,
             let imageURL = URL(string: profileImageURL)
                 
         else {
