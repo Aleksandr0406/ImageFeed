@@ -12,7 +12,13 @@ import Kingfisher
 final class ProfileViewController: UIViewController {
     private var profileImageServiceObserver: NSObjectProtocol?
     
-    private var avatarPhoto: UIImageView = UIImageView()
+    private lazy var avatarPhoto: UIImageView = {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
     private var profileName: UILabel = UILabel()
     private var mailProfile: UILabel = UILabel()
     private var descriptionProfile: UILabel = UILabel()
@@ -45,6 +51,11 @@ final class ProfileViewController: UIViewController {
         updateAvatar()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        avatarPhoto.layer.cornerRadius = avatarPhoto.frame.width
+    }
+    
     @objc private func didTapExitButton() {
         //TODO: добавить потом логику
     }
@@ -60,8 +71,6 @@ final class ProfileViewController: UIViewController {
         avatarPhoto.heightAnchor.constraint(equalToConstant: 70).isActive = true
         avatarPhoto.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16).isActive = true
         avatarPhoto.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
-        
-        view.layoutIfNeeded()
     }
     
     private func createProfileName(){
@@ -132,7 +141,7 @@ final class ProfileViewController: UIViewController {
         
         avatarPhoto.kf.indicatorType = .activity
         let processor = DownsamplingImageProcessor(size: avatarPhoto.bounds.size)
-        |> RoundCornerImageProcessor(cornerRadius: 61)
+       |> RoundCornerImageProcessor(cornerRadius: 61)
         avatarPhoto.kf.setImage(
             with: imageURL,
             placeholder: UIImage(named: "Placeholder"),
