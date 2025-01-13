@@ -9,35 +9,29 @@ import Foundation
 import UIKit
 
 final class SingleImageViewController: UIViewController {
-    var image: UIImage? {
-        didSet {
-            guard isViewLoaded, let image else {
-                print("SingleImageViewController: var image")
-                return
-            }
-            
-            singleImage.image = image
-            singleImage.frame.size = image.size
-            rescaleAndCenterImageInScrollView(image: image)
-        }
-    }
-    
     @IBOutlet private var scrollView: UIScrollView!
     @IBOutlet private var singleImage: UIImageView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        scrollView.minimumZoomScale = 0.1
-        scrollView.maximumZoomScale = 1.25
         
-        guard let image else {
-            print("SingleImageViewController: func viewDidLoad()")
-            return
+        UIBlockingProgressHUD.show()
+        singleImage.kf.setImage(with: ImagesListViewController.urlFull) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self else {
+                print("SingleImageViewController: viewDidLoad/ guard let self ")
+                return
+            }
+            
+            switch result {
+            case .success(let imageResult):
+                singleImage.frame.size = imageResult.image.size
+                rescaleAndCenterImageInScrollView(image: imageResult.image)
+            case .failure:
+                print("SingleImageViewController: viewDidLoad()/ case .failure")
+            }
         }
-        singleImage.image = image
-        singleImage.frame.size = image.size
-        
-        rescaleAndCenterImageInScrollView(image: image)
     }
     
     @IBAction private func didTapBackwardsButt(_ sender: Any) {
@@ -45,7 +39,7 @@ final class SingleImageViewController: UIViewController {
     }
     
     @IBAction private func didTapShareButton(_ sender: Any) {
-        guard let image else {
+        guard let image = singleImage.image else {
             print("SingleImageViewController: func didTapShareButton(...)")
             return
         }
@@ -61,12 +55,19 @@ final class SingleImageViewController: UIViewController {
         let maxZoomScale = scrollView.maximumZoomScale
         view.layoutIfNeeded()
         let visibleRectSize = scrollView.bounds.size
+        print("visibleRectSize: width & height", visibleRectSize.width, visibleRectSize.height)
         let imageSize = image.size
+        print("imageSize: width & height", imageSize.width, imageSize.height)
         
         if imageSize.width != 0 && imageSize.height != 0 {
             let hScale = visibleRectSize.width / imageSize.width
+            print("hScale", hScale)
             let vScale = visibleRectSize.height / imageSize.height
-            let scale = min(maxZoomScale, max(minZoomScale, min(hScale, vScale)))
+            print("vScale", vScale)
+            let scale = max(hScale, vScale)
+            print("scale", scale)
+            scrollView.minimumZoomScale = scale
+            scrollView.maximumZoomScale = 1.25
             scrollView.setZoomScale(scale, animated: false)
         } else {
             print("Деление на ноль")
@@ -74,8 +75,11 @@ final class SingleImageViewController: UIViewController {
         
         scrollView.layoutIfNeeded()
         let newContentSize = scrollView.contentSize
+        print("newContentSize: width & hegth", newContentSize.width, newContentSize.height)
         let x = (newContentSize.width - visibleRectSize.width) / 2
+        print("x", x)
         let y = (newContentSize.height - visibleRectSize.height) / 2
+        print("y", y)
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
     }
 }

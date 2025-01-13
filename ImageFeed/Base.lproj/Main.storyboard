@@ -44,7 +44,10 @@
                                                         <constraint firstAttribute="width" constant="44" id="i93-Pd-Fi2"/>
                                                     </constraints>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                    <state key="normal" image="Like_button_on"/>
+                                                    <state key="normal" image="Like_button_off"/>
+                                                    <connections>
+                                                        <action selector="likeButton:" destination="UQB-88-rj8" eventType="touchUpInside" id="6kO-oG-4X5"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="26 августа 2022 " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G14-JU-9Ld" userLabel="dataText">
                                                     <rect key="frame" x="24" y="411.66666666666669" width="106" height="15.333333333333314"/>
@@ -279,9 +282,9 @@
                             <constraint firstAttribute="top" secondItem="9CN-Rp-q11" secondAttribute="top" id="KmK-E6-Hu9"/>
                             <constraint firstItem="9CN-Rp-q11" firstAttribute="bottom" secondItem="4eh-JR-nzV" secondAttribute="bottom" id="Opg-Uy-U0r"/>
                             <constraint firstItem="UhU-Wi-cLM" firstAttribute="centerX" secondItem="pGF-Km-OIP" secondAttribute="centerX" id="Oz0-Df-KMg"/>
-                            <constraint firstAttribute="leading" secondItem="9CN-Rp-q11" secondAttribute="leading" id="Vhe-d4-gbz"/>
+                            <constraint firstItem="pGF-Km-OIP" firstAttribute="leading" secondItem="9CN-Rp-q11" secondAttribute="leading" id="Vhe-d4-gbz"/>
                             <constraint firstAttribute="bottom" secondItem="UhU-Wi-cLM" secondAttribute="bottom" constant="50" id="Wxi-YX-Td7"/>
-                            <constraint firstItem="9CN-Rp-q11" firstAttribute="trailing" secondItem="4eh-JR-nzV" secondAttribute="trailing" id="XAo-iJ-14r"/>
+                            <constraint firstItem="9CN-Rp-q11" firstAttribute="trailing" secondItem="pGF-Km-OIP" secondAttribute="trailing" id="XAo-iJ-14r"/>
                             <constraint firstItem="v8Z-cw-lHX" firstAttribute="top" secondItem="pGF-Km-OIP" secondAttribute="top" constant="11" id="aDw-Yg-ehO"/>
                             <constraint firstItem="v8Z-cw-lHX" firstAttribute="leading" secondItem="pGF-Km-OIP" secondAttribute="leading" constant="9" id="oqX-GY-das"/>
                         </constraints>
@@ -294,12 +297,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fQ7-Z8-hpx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2408" y="-230"/>
+            <point key="canvasLocation" x="-2408.3969465648852" y="-230.28169014084509"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="f8J-y0-DGE">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dpo-BW-Abk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="wWn-Pc-a4x" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="xvN-uL-NbD"/>
@@ -312,6 +314,7 @@
                         <segue destination="kuk-J1-K7A" kind="relationship" relationship="rootViewController" id="CLc-f1-5JU"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dpo-BW-Abk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-3295" y="-1263"/>
         </scene>
@@ -320,7 +323,7 @@
         <image name="0" width="1600" height="1059"/>
         <image name="Auth_screen_logo" width="60" height="60"/>
         <image name="BackwardButton" width="24" height="24"/>
-        <image name="Like_button_on" width="42" height="42"/>
+        <image name="Like_button_off" width="42" height="42"/>
         <image name="Sharing" width="50" height="50"/>
         <image name="Tab_editorial_active" width="30" height="30"/>
         <namedColor name="Background">

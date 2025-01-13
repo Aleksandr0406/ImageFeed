@@ -8,6 +8,12 @@
 import Foundation
 import UIKit
 
+struct AlertViewModel {
+    var title: String
+    var message: String
+    var buttonText: String
+}
+
 final class AlertPresenter {
     
     weak var delegate: UIViewController?

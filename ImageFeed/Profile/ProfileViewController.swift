@@ -19,6 +19,8 @@ final class ProfileViewController: UIViewController {
         return imageView
     }()
     
+    private let alert = AlertPresenter()
+    
     private var profileName: UILabel = UILabel()
     private var mailProfile: UILabel = UILabel()
     private var descriptionProfile: UILabel = UILabel()
@@ -29,6 +31,8 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        alert.delegate = self
         
         profileImageServiceObserver = NotificationCenter.default
             .addObserver(
@@ -57,7 +61,37 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func didTapExitButton() {
-        //TODO: добавить потом логику
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        let actionYes = UIAlertAction(
+            title: "Да",
+            style: .default
+        ) { [weak self] _ in
+            guard self != nil else {
+                print("AlertPresenter: action")
+                return
+            }
+            ProfileLogoutService.shared.logout()
+        }
+        
+        let actionNo = UIAlertAction(
+            title: "Нет",
+            style: .default
+        ) { [weak self] _ in
+            guard self != nil else {
+                print("AlertPresenter: action")
+                return
+            }
+        }
+        
+        alert.addAction(actionYes)
+        alert.addAction(actionNo)
+        
+        self.present(alert, animated: true)
     }
     
     private func createProfileImage() {
@@ -141,7 +175,7 @@ final class ProfileViewController: UIViewController {
         
         avatarPhoto.kf.indicatorType = .activity
         let processor = DownsamplingImageProcessor(size: avatarPhoto.bounds.size)
-       |> RoundCornerImageProcessor(cornerRadius: 61)
+        |> RoundCornerImageProcessor(cornerRadius: 61)
         avatarPhoto.kf.setImage(
             with: imageURL,
             placeholder: UIImage(named: "Placeholder"),

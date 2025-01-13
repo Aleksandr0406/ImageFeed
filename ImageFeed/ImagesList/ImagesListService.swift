@@ -9,20 +9,17 @@ import Foundation
 
 final class ImagesListService {
     static let shared = ImagesListService()
-    
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
-//    private(set) var photos: [Photo] = []
     
     private let storageToken = OAuth2TokenStorage.shared.token
-    
-    private var nextPageNumber: Int = 1
-    
     private var task: URLSessionTask?
+    
+    var photos: [Photo] = []
+    var nextPageNumber: Int = 1
     
     private init() {}
     
     func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void) {
-//        let nextPage = (lastLoadedPage?.number ?? 0) + 1
         guard let token = storageToken else { return }
         fetchPhotos(token) { [weak self] (result: Result<[Photo], Error>) in
             guard self != nil else {
@@ -32,8 +29,6 @@ final class ImagesListService {
             
             switch result {
             case .success(let data):
-                print("Good")
-                print(data.count)
                 completion(.success(data))
             case .failure:
                 print("ImagesListService: func fetchPhotosNextPage(...)/case .failure")
@@ -80,6 +75,44 @@ final class ImagesListService {
         var request = URLRequest(url: url)
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
+        return request
+    }
+    
+    func fetchIsLiked(tokenIn token: String, idIn id: String, requestTypeIn requestType: String, completion: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
+        task?.cancel()
+        
+        guard let makeRequestToIsLiked = makeRequestToIsLiked(tokenIn: token, idIn: id, requestTypein: requestType) else {
+            print("ProfileService: func fetchProfile(...)/makeRequestToProfile Error make profile request")
+            return
+        }
+        
+        let task = URLSession.shared.objectTask(for: makeRequestToIsLiked) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard self != nil else {
+                print("ImagesListService: URLSession.shared.objectTask/ guard self")
+                return
+            }
+            
+            switch result {
+            case .success(let data):
+                completion(.success(data))
+            case .failure:
+                print("ImagesListService: URLSession.shared.objectTask/ case .failure")
+            }
+        }
+        
+        task.resume()
+    }
+    
+    private func makeRequestToIsLiked(tokenIn token: String, idIn id: String, requestTypein requestType: String) -> URLRequest? {
+        guard let urlComponent = URLComponents(string: Constants.defaultURL + "photos/" + id + "/like") else { return nil }
+        
+        guard let url = urlComponent.url else { return nil }
+        
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.httpMethod = requestType
         return request
     }
 }

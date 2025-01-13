@@ -44,7 +44,6 @@ final class ProfileService {
     }
     
     private func makeRequestToProfile(_ authToken: String) -> URLRequest? {
-//        guard let url = URL(string: "https://api.unsplash.com/me") else {
         guard let url = URL(string: Constants.defaultURL + "me") else {
             print("ProfileService: func makeRequestToProfile(...)")
             assertionFailure("Failed to create URL")

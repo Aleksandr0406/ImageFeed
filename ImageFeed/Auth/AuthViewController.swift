@@ -43,7 +43,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         vc.dismiss(animated: true)
         
-        UIBlockingProgressHUD.show()
         print("AuthViewController: func webViewViewController(...)")
         
         delegate?.didAuthenticate(self, didAuthenticateWithCode: code)

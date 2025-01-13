@@ -9,11 +9,16 @@ import Foundation
 
 struct Photo: Decodable {
     let id: String?
-//    let size: CGSize?
     let createdAt: String?
     let description: String?
-//    let thumbImageURL: String?
-//    let largeImageURL: String?
-    let likedByUser: Bool?
+    var likedByUser: Bool?
     let urls: UrlsResult?
+}
+
+struct IslikedPhotoStats: Decodable {
+    let photo: IsLikedPhoto?
+}
+
+struct IsLikedPhoto: Decodable {
+    let likedByUser: Bool?
 }

@@ -29,7 +29,7 @@ final class ProfileImageService {
             UIBlockingProgressHUD.dismiss()
             
             guard self != nil else {
-                print("ProfileImageService: func fetchProfileImageURL/URLSession.shared.objectTask")
+                print("ProfileImageService: func fetchProfileImageURL/URLSession.shared.objectTask/ guard self")
                 return
             }
             
@@ -37,7 +37,7 @@ final class ProfileImageService {
             case .success(let data):
                 completion(.success(data))
             case .failure:
-                print("Error pushing data in ProfileImageService")
+                print("ProfileImageService: func fetchProfileImageURL/URLSession.shared.objectTask/ .failure")
                 break
             }
         }
@@ -47,7 +47,6 @@ final class ProfileImageService {
     
     
     private func makeRequestToProfileImage(_ authToken: String, _ username: String) -> URLRequest? {
-//        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
         guard let url = URL(string: Constants.defaultURL + "/users/" + username) else {
             print("ProfileImageService: func makeRequestToProfileImage(...)")
             assertionFailure("Failed to create URL")
