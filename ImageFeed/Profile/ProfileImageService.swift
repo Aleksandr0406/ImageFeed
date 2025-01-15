@@ -11,21 +11,21 @@ final class ProfileImageService {
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProvideDidChange")
     static let shared = ProfileImageService()
     
-    private var task: URLSessionTask?
-    
     var avatarURL: String?
+    
+    private var task: URLSessionTask?
     
     private init() {}
     
     func fetchProfileImageURL(_ username: String, _ token: String, _ completion: @escaping (Result<ProfileResult, Error>) -> Void) {
         task?.cancel()
         
-        guard let makeRequestToProfileImage = makeRequestToProfileImage(token, username) else {
-            print("ProfileImageService: func fetchProfileImageURL(...)/makeRequestToProfileImage Error make profile request")
+        guard let requestToProfileImage = makeRequestToProfileImage(token, username) else {
+            print("ProfileImageService: func fetchProfileImageURL(...)/requestToProfileImage Error make profile request")
             return
         }
         
-        let task = URLSession.shared.objectTask(for: makeRequestToProfileImage) { [weak self] (result: Result<ProfileResult, Error>) in
+        let task = URLSession.shared.objectTask(for: requestToProfileImage) { [weak self] (result: Result<ProfileResult, Error>) in
             UIBlockingProgressHUD.dismiss()
             
             guard self != nil else {

@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 struct AlertViewModel {
-    var title: String
-    var message: String
-    var buttonText: String
+    let title: String
+    let message: String
+    let buttonText: String
 }
 
 final class AlertPresenter {

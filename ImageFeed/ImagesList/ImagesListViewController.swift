@@ -10,12 +10,13 @@ import UIKit
 final class ImagesListViewController: UIViewController {
     static var urlFull: URL?
     
+    @IBOutlet private var tableView: UITableView!
+    
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let service: ImagesListService = .shared
     private var photos: [Photo] = []
-    private var dateFormatter = ISO8601DateFormatter()
-    
-    @IBOutlet private var tableView: UITableView!
+    private var dateFormatterISO = ISO8601DateFormatter()
+    private var dateFormatter = DateFormatter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +35,13 @@ final class ImagesListViewController: UIViewController {
         }
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == showSingleImageSegueIdentifier {
+        } else {
+            super.prepare(for: segue, sender: sender)
+        }
+    }
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard indexPath.row == photos.count - 1 else { return }
         service.fetchPhotosNextPage() { [weak self] result in
@@ -47,13 +55,6 @@ final class ImagesListViewController: UIViewController {
             case .failure:
                 print("ImagesListViewController: func fetchPhotosNextPage ")
             }
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showSingleImageSegueIdentifier {
-        } else {
-            super.prepare(for: segue, sender: sender)
         }
     }
 }
@@ -94,32 +95,47 @@ extension ImagesListViewController: ImagesListCellDelegate {
             return
         }
         
-        if likedByUser == false {
-            service.fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: "POST") { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-                guard self != nil else { return }
-                
-                switch result {
-                case .success(let data):
-                    print("ImagesListViewController: func imageListCellDidTapLike/ .success")
-                    self?.photos[indexPath.row].likedByUser = !likedByUser
-                    complition(.success(data))
-                case .failure:
-                    UIBlockingProgressHUD.dismiss()
-                    print("Error pushing data in ImagesListService")
-                }
+        service.setLikeState(likedByUser, token, id, indexPath.row) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let data):
+                print("ImagesListViewController: func imageListCellDidTapLike/ .success")
+                self.photos[indexPath.row].likedByUser = !likedByUser
+                complition(.success(data))
+            case .failure:
+                UIBlockingProgressHUD.dismiss()
+                print("ImagesListViewController: func imageListCellDidTapLike/ .failure")
             }
-        } else {
-            service.fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: "DELETE") { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-                guard self != nil else { return }
-                
-                switch result {
-                case .success(let data):
-                    self?.photos[indexPath.row].likedByUser = !likedByUser
-                    complition(.success(data))
-                case .failure:
-                    print("Error pushing data in ImagesListService")
-                }
-            }
+            
+            //                    MARK: старая логика реализации функциональности лайков(удалю при утверждении новой)
+            //                    if likedByUser == false {
+            //                        service.fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: "POST") { [weak self] (result: Result<IslikedPhotoStats, Error>) in
+            //                            guard let self else { return }
+            //
+            //                            switch result {
+            //                            case .success(let data):
+            //                                print("ImagesListViewController: func imageListCellDidTapLike/ .success")
+            //                                self.photos[indexPath.row].likedByUser = !likedByUser
+            //                                complition(.success(data))
+            //                            case .failure:
+            //                                UIBlockingProgressHUD.dismiss()
+            //                                print("Error pushing data in ImagesListService")
+            //                            }
+            //                        }
+            //                    } else {
+            //                        service.fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: "DELETE") { [weak self] (result: Result<IslikedPhotoStats, Error>) in
+            //                            guard let self else { return }
+            //
+            //                            switch result {
+            //                            case .success(let data):
+            //                                self.photos[indexPath.row].likedByUser = !likedByUser
+            //                                complition(.success(data))
+            //                            case .failure:
+            //                                print("Error pushing data in ImagesListService")
+            //                            }
+            //                        }
+            //                    }
         }
     }
 }
@@ -131,22 +147,24 @@ private extension ImagesListViewController {
                                    placeholder: UIImage(named: "PlaceholderForImage"),
                                    options: [.transition(.fade(1))]
         )
-        { _ in
+        { [weak self] _ in
+            guard let self else {
+                print("extension ImagesListViewController: configCell guard")
+                return
+            }
             self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
         
         guard let createdAt = photos[indexPath.row].createdAt,
-        let date = dateFormatter.date(from: createdAt)
+              let date = dateFormatterISO.date(from: createdAt)
         else {
             print("ImagesListViewController: configCell")
             return
         }
         
-        let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
         dateFormatter.locale = Locale(identifier: "rus")
-        dateFormatter.string(from: date)
         cell.dateLabel.text = dateFormatter.string(from: date)
         
         guard let isLiked = photos[indexPath.row].likedByUser else {
@@ -178,22 +196,18 @@ extension ImagesListViewController: UITableViewDelegate {
         
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }
+    
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
+        guard let imageWidth = photos[indexPath.row].width,
+              let imageHeight = photos[indexPath.row].height else { 
+            print("ImagesListViewController: tableView/ height cell")
+            return CGFloat() }
+        let scale = imageViewWidth / imageWidth
+        let cellHeight = imageHeight * scale + imageInsets.top + imageInsets.bottom
+        return cellHeight
+    }
 }
-
-//    MARK: оставил если необходимо будет поправить высоту фоток
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return 400
-//                guard let image = UIImage(named: photosName[indexPath.row]) else {
-//                    print("ImagesListViewController: func tableView(...)")
-//                    return 0
-//                }
-//
-//                let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-//                let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-//                let imageWidth = image.size.width
-//                let scale = imageViewWidth / imageWidth
-//                let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
-//                return cellHeight
-//            }
-//    }
 

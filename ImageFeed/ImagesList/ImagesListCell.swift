@@ -17,18 +17,18 @@ final class ImagesListCell: UITableViewCell {
     
     weak var delegate: ImagesListCellDelegate?
     
-    private let service: ImagesListService = .shared
-    
     @IBOutlet var gradientView: UIImageView!
     @IBOutlet var cellImage: UIImageView!
     @IBOutlet var likeButton: UIButton!
     @IBOutlet var dateLabel: UILabel!
     
+    private let service: ImagesListService = .shared
+    
     override func prepareForReuse() {
         cellImage.kf.cancelDownloadTask()
     }
     
-    @IBAction private func likeButton(_ sender: Any) {
+    @IBAction private func pressLikeButton(_ sender: Any) {
         delegate?.imageListCellDidTapLike(self) { [weak self] result in
             guard let self else {
                 print("ImagesListCell: func likeButton")

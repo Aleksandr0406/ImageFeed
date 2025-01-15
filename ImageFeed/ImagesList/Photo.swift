@@ -10,6 +10,8 @@ import Foundation
 struct Photo: Decodable {
     let id: String?
     let createdAt: String?
+    let width: CGFloat?
+    let height: CGFloat?
     let description: String?
     var likedByUser: Bool?
     let urls: UrlsResult?

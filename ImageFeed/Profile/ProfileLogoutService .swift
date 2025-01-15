@@ -12,7 +12,7 @@ import SwiftKeychainWrapper
 final class ProfileLogoutService {
     static let shared = ProfileLogoutService()
     
-    private var removeSuccessful: Bool?
+    private var removeSuccessful = KeychainWrapper.standard
     private var profileService: ProfileService = .shared
     private var profileImageService: ProfileImageService = .shared
     private var imageListService: ImagesListService = .shared
@@ -25,7 +25,7 @@ final class ProfileLogoutService {
         profileImageService.avatarURL = nil
         imageListService.photos = []
         imageListService.nextPageNumber = 1
-        removeSuccessful = KeychainWrapper.standard.removeObject(forKey: Constants.bearerToken)
+        removeSuccessful.removeObject(forKey: Constants.bearerToken)
         switchToAuthViewController()
     }
     
