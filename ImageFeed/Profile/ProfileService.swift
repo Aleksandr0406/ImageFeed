@@ -10,20 +10,21 @@ import Foundation
 final class ProfileService {
     static let shared = ProfileService()
     
-    private var task: URLSessionTask?
     var profile: ProfileResult?
     
+    private var task: URLSessionTask?
+
     private init() {}
     
     func fetchProfile(_ token: String, completion: @escaping (Result<ProfileResult, Error>) -> Void) {
         task?.cancel()
         
-        guard let makeRequestToProfile = makeRequestToProfile(token) else {
-            print("ProfileService: func fetchProfile(...)/makeRequestToProfile Error make profile request")
+        guard let requestToProfile = makeRequestToProfile(token) else {
+            print("ProfileService: func fetchProfile(...)/requestToProfile Error make profile request")
             return
         }
         
-        let task = URLSession.shared.objectTask(for: makeRequestToProfile) { [weak self] (result: Result<ProfileResult, Error>) in
+        let task = URLSession.shared.objectTask(for: requestToProfile) { [weak self] (result: Result<ProfileResult, Error>) in
             UIBlockingProgressHUD.dismiss()
             
             guard self != nil else {
@@ -44,7 +45,6 @@ final class ProfileService {
     }
     
     private func makeRequestToProfile(_ authToken: String) -> URLRequest? {
-//        guard let url = URL(string: "https://api.unsplash.com/me") else {
         guard let url = URL(string: Constants.defaultURL + "me") else {
             print("ProfileService: func makeRequestToProfile(...)")
             assertionFailure("Failed to create URL")

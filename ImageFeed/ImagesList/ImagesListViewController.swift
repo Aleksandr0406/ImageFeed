@@ -8,47 +8,60 @@
 import UIKit
 
 final class ImagesListViewController: UIViewController {
-    private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let currentDate = Date()
-    private let photosName: [String] = Array(0...19).map{ "\($0)"}
-    private lazy var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
-        formatter.locale = Locale(identifier: "rus")
-        return formatter
-    }()
+    static var urlFull: URL?
     
     @IBOutlet private var tableView: UITableView!
+    
+    private let showSingleImageSegueIdentifier = "ShowSingleImage"
+    private let service: ImagesListService = .shared
+    private var photos: [Photo] = []
+    private var dateFormatterISO = ISO8601DateFormatter()
+    private var dateFormatter = DateFormatter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        
+        service.fetchPhotosNextPage { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let newPhoto):
+                photos += newPhoto
+                service.photos += newPhoto
+                tableView.reloadData()
+            case .failure:
+                print("ImagesListViewController: func fetchPhotosNextPage ")
+            }
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showSingleImageSegueIdentifier {
-            guard
-                let viewController = segue.destination as? SingleImageViewController,
-                let indexPath = sender as? IndexPath
-            else {
-                print("ImagesListViewController: func prepare(...)")
-                assertionFailure("Invalid segue destination")
-                return
-            }
-            
-            let image = UIImage(named: photosName[indexPath.row])
-            viewController.image = image
-            
         } else {
             super.prepare(for: segue, sender: sender)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard indexPath.row == photos.count - 1 else { return }
+        service.fetchPhotosNextPage() { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let newPhoto):
+                photos += newPhoto
+                service.photos += newPhoto
+                print(photos.count)
+                tableView.reloadData()
+            case .failure:
+                print("ImagesListViewController: func fetchPhotosNextPage ")
+            }
         }
     }
 }
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosName.count
+        return photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -59,28 +72,78 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
+        imageListCell.delegate = self
         setupGradientView(imageListCell)
-        
         configCell(for: imageListCell, with: indexPath)
         
         return imageListCell
     }
 }
 
-private extension ImagesListViewController {
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            print("ImagesListViewController: func configCell(...)")
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        
+        UIBlockingProgressHUD.show()
+        
+        guard let id = photo.id,
+              let likedByUser = photo.likedByUser,
+              let token = OAuth2TokenStorage.shared.token else {
+            print("ImagesListViewController: func imageListCellDidTapLike/ guard let id")
             return
         }
         
-        cell.cellImage.image = image
-        cell.dateLabel.text = dateFormatter.string(from: currentDate)
+        service.setLikeState(likedByUser, token, id) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let data):
+                print("ImagesListViewController: func imageListCellDidTapLike/ .success")
+                self.photos[indexPath.row].likedByUser = !likedByUser
+                complition(.success(data))
+            case .failure:
+                UIBlockingProgressHUD.dismiss()
+                print("ImagesListViewController: func imageListCellDidTapLike/ .failure")
+            }
+        }
+    }
+}
+
+private extension ImagesListViewController {
+    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+        cell.cellImage.kf.indicatorType = .activity
+        cell.cellImage.kf.setImage(with: photos[indexPath.row].urls?.regular,
+                                   placeholder: UIImage(named: "PlaceholderForImage"),
+                                   options: [.transition(.fade(1))]
+        )
+        { [weak self] _ in
+            guard let self else {
+                print("extension ImagesListViewController: configCell guard")
+                return
+            }
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
         
-        let isLiked = indexPath.row % 2 == 0
+        guard let createdAt = photos[indexPath.row].createdAt,
+              let date = dateFormatterISO.date(from: createdAt)
+        else {
+            print("ImagesListViewController: configCell")
+            return
+        }
+        
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        dateFormatter.locale = Locale(identifier: "rus")
+        cell.dateLabel.text = dateFormatter.string(from: date)
+        
+        guard let isLiked = photos[indexPath.row].likedByUser else {
+            print("ImagesListViewController: func configCell/guard isLiked ")
+            return
+        }
         let likeImage = isLiked ? UIImage(named: "Like_button_on") : UIImage(named: "Like_button_off")
         cell.likeButton.setImage(likeImage, for: .normal)
-        
     }
     
     func setupGradientView(_ cell: ImagesListCell) {
@@ -99,20 +162,23 @@ private extension ImagesListViewController {
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        ImagesListViewController.urlFull = photos[indexPath.row].urls?.full
+        print("URLFULL", ImagesListViewController.urlFull!)
+        
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }
     
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            print("ImagesListViewController: func tableView(...)")
-            return 0
-        }
-        
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-        let imageWidth = image.size.width
+        guard let imageWidth = photos[indexPath.row].width,
+              let imageHeight = photos[indexPath.row].height else {
+            print("ImagesListViewController: tableView/ height cell")
+            return CGFloat() }
         let scale = imageViewWidth / imageWidth
-        let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
+        let cellHeight = imageHeight * scale + imageInsets.top + imageInsets.bottom
         return cellHeight
     }
 }
+

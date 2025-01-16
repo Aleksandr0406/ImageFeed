@@ -10,11 +10,11 @@ import UIKit
 import SwiftKeychainWrapper
 
 final class SplashViewController: UIViewController {
-    private let profileService = ProfileService.shared
+    private let profileService: ProfileService = .shared
     private let identifierForSegueToAuth = "ShowAuthorization"
+    private let alert: AlertPresenter = AlertPresenter()
+    private var wasChecked: Bool = false
     private var username: String?
-    private let alert = AlertPresenter()
-    private var wasChecked = false
     
     private var imageView: UIImageView = UIImageView()
     
@@ -35,8 +35,8 @@ final class SplashViewController: UIViewController {
     }
     
     private func checkAuthStatus() {
-//        MARK: for testing -removing token from keychain
-//        let removeSuccessful: Bool = KeychainWrapper.standard.removeObject(forKey: Constants.bearerToken)
+//                MARK: for testing: removing token from keychain
+//                let removeSuccessful: Bool = KeychainWrapper.standard.removeObject(forKey: Constants.bearerToken)
         
         guard !wasChecked else { return }
         wasChecked = true

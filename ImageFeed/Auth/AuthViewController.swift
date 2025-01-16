@@ -9,10 +9,10 @@ import Foundation
 import UIKit
 
 final class AuthViewController: UIViewController {
-    private let identifierForSegue = "ShowWebView"
-    
     weak var delegate: AuthViewControllerDelegate?
     
+    private let identifierForSegue = "ShowWebView"
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackButton()
@@ -43,7 +43,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         vc.dismiss(animated: true)
         
-        UIBlockingProgressHUD.show()
         print("AuthViewController: func webViewViewController(...)")
         
         delegate?.didAuthenticate(self, didAuthenticateWithCode: code)

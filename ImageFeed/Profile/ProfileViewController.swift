@@ -12,7 +12,15 @@ import Kingfisher
 final class ProfileViewController: UIViewController {
     private var profileImageServiceObserver: NSObjectProtocol?
     
-    private var avatarPhoto: UIImageView = UIImageView()
+    private lazy var avatarPhoto: UIImageView = {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
+    private let alert = AlertPresenter()
+    
     private var profileName: UILabel = UILabel()
     private var mailProfile: UILabel = UILabel()
     private var descriptionProfile: UILabel = UILabel()
@@ -23,6 +31,8 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        alert.delegate = self
         
         profileImageServiceObserver = NotificationCenter.default
             .addObserver(
@@ -45,8 +55,43 @@ final class ProfileViewController: UIViewController {
         updateAvatar()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        avatarPhoto.layer.cornerRadius = avatarPhoto.frame.width
+    }
+    
     @objc private func didTapExitButton() {
-        //TODO: добавить потом логику
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        let actionYes = UIAlertAction(
+            title: "Да",
+            style: .default
+        ) { [weak self] _ in
+            guard self != nil else {
+                print("AlertPresenter: action")
+                return
+            }
+            ProfileLogoutService.shared.logout()
+        }
+        
+        let actionNo = UIAlertAction(
+            title: "Нет",
+            style: .default
+        ) { [weak self] _ in
+            guard self != nil else {
+                print("AlertPresenter: action")
+                return
+            }
+        }
+        
+        alert.addAction(actionYes)
+        alert.addAction(actionNo)
+        
+        self.present(alert, animated: true)
     }
     
     private func createProfileImage() {
@@ -60,8 +105,6 @@ final class ProfileViewController: UIViewController {
         avatarPhoto.heightAnchor.constraint(equalToConstant: 70).isActive = true
         avatarPhoto.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16).isActive = true
         avatarPhoto.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
-        
-        view.layoutIfNeeded()
     }
     
     private func createProfileName(){

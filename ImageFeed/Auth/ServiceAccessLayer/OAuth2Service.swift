@@ -9,12 +9,12 @@ import Foundation
 import UIKit
 
 final class OAuth2Service {
-    private let urlSession = URLSession.shared
+    static let shared = OAuth2Service()
     
+    private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var lastCode: String?
     
-    static let shared = OAuth2Service()
     private init() {}
     
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
