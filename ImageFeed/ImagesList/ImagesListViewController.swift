@@ -95,7 +95,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
             return
         }
         
-        service.setLikeState(likedByUser, token, id, indexPath.row) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
+        service.setLikeState(likedByUser, token, id) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
             guard let self else { return }
             
             switch result {
@@ -107,35 +107,6 @@ extension ImagesListViewController: ImagesListCellDelegate {
                 UIBlockingProgressHUD.dismiss()
                 print("ImagesListViewController: func imageListCellDidTapLike/ .failure")
             }
-            
-            //                    MARK: старая логика реализации функциональности лайков(удалю при утверждении новой)
-            //                    if likedByUser == false {
-            //                        service.fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: "POST") { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-            //                            guard let self else { return }
-            //
-            //                            switch result {
-            //                            case .success(let data):
-            //                                print("ImagesListViewController: func imageListCellDidTapLike/ .success")
-            //                                self.photos[indexPath.row].likedByUser = !likedByUser
-            //                                complition(.success(data))
-            //                            case .failure:
-            //                                UIBlockingProgressHUD.dismiss()
-            //                                print("Error pushing data in ImagesListService")
-            //                            }
-            //                        }
-            //                    } else {
-            //                        service.fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: "DELETE") { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-            //                            guard let self else { return }
-            //
-            //                            switch result {
-            //                            case .success(let data):
-            //                                self.photos[indexPath.row].likedByUser = !likedByUser
-            //                                complition(.success(data))
-            //                            case .failure:
-            //                                print("Error pushing data in ImagesListService")
-            //                            }
-            //                        }
-            //                    }
         }
     }
 }
@@ -202,7 +173,7 @@ extension ImagesListViewController: UITableViewDelegate {
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
         guard let imageWidth = photos[indexPath.row].width,
-              let imageHeight = photos[indexPath.row].height else { 
+              let imageHeight = photos[indexPath.row].height else {
             print("ImagesListViewController: tableView/ height cell")
             return CGFloat() }
         let scale = imageViewWidth / imageWidth

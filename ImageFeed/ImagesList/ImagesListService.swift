@@ -63,29 +63,17 @@ final class ImagesListService {
         task.resume()
     }
     
-    func setLikeState(_ likedByUserCurrent: Bool, _ token: String, _ id: String, _ indexPathRow: Int, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
-        if likedByUserCurrent == false {
-            fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: "POST") { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-                guard let self else { return }
-                
-                switch result {
-                case .success(let data):
-                    print("ImagesListService: func imageListCellDidTapLike/ .success")
-                    complition(.success(data))
-                case .failure:
-                    print("ImagesListService: fetchIsLiked/ case .failure POST")
-                }
-            }
-        } else {
-            fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: "DELETE") { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-                guard let self else { return }
-                
-                switch result {
-                case .success(let data):
-                    complition(.success(data))
-                case .failure:
-                    print("ImagesListService: fetchIsLiked/ case .failure DELETE")
-                }
+    func setLikeState(_ likedByUserCurrent: Bool, _ token: String, _ id: String, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
+        let requestTypeIn = (!likedByUserCurrent) ? "POST" : "DELETE"
+        fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: requestTypeIn) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let data):
+                print("ImagesListService: func imageListCellDidTapLike/ .success")
+                complition(.success(data))
+            case .failure:
+                print("ImagesListService: fetchIsLiked/ case .failure")
             }
         }
     }
