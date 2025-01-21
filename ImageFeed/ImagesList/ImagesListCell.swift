@@ -8,9 +8,9 @@
 import Foundation
 import UIKit
 
-protocol ImagesListCellDelegate: AnyObject {
-    func imageListCellDidTapLike(_ cell: ImagesListCell, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void)
-}
+//protocol ImagesListCellDelegate: AnyObject {
+//    func imageListCellDidTapLike(_ cell: ImagesListCell, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void)
+//}
 
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"

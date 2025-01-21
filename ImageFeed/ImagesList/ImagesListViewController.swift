@@ -43,17 +43,23 @@ final class ImagesListViewController: UIViewController {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard indexPath.row == photos.count - 1 else { return }
-        service.fetchPhotosNextPage() { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case .success(let newPhoto):
-                photos += newPhoto
-                service.photos += newPhoto
-                print(photos.count)
-                tableView.reloadData()
-            case .failure:
-                print("ImagesListViewController: func fetchPhotosNextPage ")
+        let testMode = ProcessInfo.processInfo.arguments.contains("testMode")
+        
+        if testMode {
+            print("For TESTing")
+        } else {
+            guard indexPath.row == photos.count - 1 else { return }
+            service.fetchPhotosNextPage() { [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success(let newPhoto):
+                    photos += newPhoto
+                    service.photos += newPhoto
+                    print(photos.count)
+                    tableView.reloadData()
+                case .failure:
+                    print("ImagesListViewController: func fetchPhotosNextPage ")
+                }
             }
         }
     }

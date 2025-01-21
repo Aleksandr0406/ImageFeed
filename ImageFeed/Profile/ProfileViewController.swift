@@ -9,8 +9,9 @@ import Foundation
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
-    private var profileImageServiceObserver: NSObjectProtocol?
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    var presenter: ProfilePresenterProtocol? = ProfilePresenter()
+    var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var avatarPhoto: UIImageView = {
         let imageView = UIImageView()
@@ -19,30 +20,26 @@ final class ProfileViewController: UIViewController {
         return imageView
     }()
     
-    private let alert = AlertPresenter()
-    
     private var profileName: UILabel = UILabel()
     private var mailProfile: UILabel = UILabel()
     private var descriptionProfile: UILabel = UILabel()
     private var exitButton: UIButton = UIButton()
     
-    private let profileService: ProfileService = ProfileService.shared
-    private let profileImageService: ProfileImageService = ProfileImageService.shared
+//    private let profileService: ProfileService = ProfileService.shared
+//    private let profileImageService: ProfileImageService = ProfileImageService.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        alert.delegate = self
-        
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self else { return }
-                self.updateAvatar()
-            }
+//        profileImageServiceObserver = NotificationCenter.default
+//            .addObserver(
+//                forName: ProfileImageService.didChangeNotification,
+//                object: nil,
+//                queue: .main
+//            ) { [weak self] _ in
+//                guard let self else { return }
+//                self.updateAvatar()
+//            }
         
         self.view.backgroundColor = UIColor(named: "Background")
         
@@ -51,47 +48,44 @@ final class ProfileViewController: UIViewController {
         createMailProfile()
         createDescriptionProfile()
         createExitButton()
-        
-        updateAvatar()
+//        updateAvatar()
+        presenter?.viewDidLoad()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        avatarPhoto.layer.cornerRadius = avatarPhoto.frame.width
+//    override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        avatarPhoto.layer.cornerRadius = avatarPhoto.frame.width
+//    }
+    
+    func updateUserInfo(name: String, login: String, bio: String) {
+        print(name, login, bio)
+        profileName.text = name
+        mailProfile.text = login
+        descriptionProfile.text = bio
     }
     
-    @objc private func didTapExitButton() {
-        let alert = UIAlertController(
-            title: "Пока, пока!",
-            message: "Уверены что хотите выйти?",
-            preferredStyle: .alert
-        )
+    func updateAvatarPhoto(with imageUrl: URL) {
+//        guard
+//            isViewLoaded,
+//            let profileImageURL = profileImageService.avatarURL,
+//            let imageURL = URL(string: profileImageURL)
+//                
+//        else {
+//            print("ProfileViewController: func updateAvatar() Cant rewrite imageURL into profileImageURL")
+//            return
+//        }
         
-        let actionYes = UIAlertAction(
-            title: "Да",
-            style: .default
-        ) { [weak self] _ in
-            guard self != nil else {
-                print("AlertPresenter: action")
-                return
-            }
-            ProfileLogoutService.shared.logout()
-        }
-        
-        let actionNo = UIAlertAction(
-            title: "Нет",
-            style: .default
-        ) { [weak self] _ in
-            guard self != nil else {
-                print("AlertPresenter: action")
-                return
-            }
-        }
-        
-        alert.addAction(actionYes)
-        alert.addAction(actionNo)
-        
-        self.present(alert, animated: true)
+        avatarPhoto.kf.indicatorType = .activity
+        let processor = DownsamplingImageProcessor(size: avatarPhoto.bounds.size)
+        |> RoundCornerImageProcessor(cornerRadius: 61)
+        avatarPhoto.kf.setImage(
+            with: imageUrl,
+            placeholder: UIImage(named: "Placeholder"),
+            options: [
+                .processor(processor),
+                .transition(.fade(1)),
+                .cacheOriginalImage
+            ])
     }
     
     private func createProfileImage() {
@@ -109,7 +103,7 @@ final class ProfileViewController: UIViewController {
     
     private func createProfileName(){
         profileName = UILabel()
-        profileName.text = profileService.profile?.firstName
+//        profileName.text = profileService.profile?.firstName
         profileName.textColor = UIColor(named: "WhiteText")
         profileName.font = .boldSystemFont(ofSize: 23)
         
@@ -122,7 +116,7 @@ final class ProfileViewController: UIViewController {
     
     private func createMailProfile() {
         mailProfile = UILabel()
-        mailProfile.text = profileService.profile?.username
+//        mailProfile.text = profileService.profile?.username
         mailProfile.textColor = UIColor(named: "MailProfile")
         mailProfile.font = .systemFont(ofSize: 13)
         
@@ -136,7 +130,7 @@ final class ProfileViewController: UIViewController {
     
     private func createDescriptionProfile() {
         descriptionProfile = UILabel()
-        descriptionProfile.text = profileService.profile?.bio
+//        descriptionProfile.text = profileService.profile?.bio
         descriptionProfile.textColor = UIColor(named: "WhiteText")
         descriptionProfile.font = .systemFont(ofSize: 13)
         
@@ -158,30 +152,68 @@ final class ProfileViewController: UIViewController {
         exitButton.contentMode = .center
         exitButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -24).isActive = true
         exitButton.centerYAnchor.constraint(equalTo: avatarPhoto.centerYAnchor).isActive = true
+        
+        exitButton.accessibilityIdentifier = "logoutButton"
     }
     
-    private func updateAvatar() {
-        guard
-            isViewLoaded,
-            let profileImageURL = profileImageService.avatarURL,
-            let imageURL = URL(string: profileImageURL)
-                
-        else {
-            print("ProfileViewController: func updateAvatar() Cant rewrite imageURL into profileImageURL")
-            return
+//    private func updateAvatar() {
+//        guard
+//            isViewLoaded,
+//            let profileImageURL = profileImageService.avatarURL,
+//            let imageURL = URL(string: profileImageURL)
+//                
+//        else {
+//            print("ProfileViewController: func updateAvatar() Cant rewrite imageURL into profileImageURL")
+//            return
+//        }
+//        
+//        avatarPhoto.kf.indicatorType = .activity
+//        let processor = DownsamplingImageProcessor(size: avatarPhoto.bounds.size)
+//        |> RoundCornerImageProcessor(cornerRadius: 61)
+//        avatarPhoto.kf.setImage(
+//            with: imageURL,
+//            placeholder: UIImage(named: "Placeholder"),
+//            options: [
+//                .processor(processor),
+//                .transition(.fade(1))
+//            ])
+//    }
+    
+    @objc private func didTapExitButton() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        alert.view.accessibilityIdentifier = "ByeBye"
+        
+        let actionYes = UIAlertAction(
+            title: "Да",
+            style: .default
+        ) { [weak self] _ in
+            guard self != nil else {
+                print("AlertPresenter: action")
+                return
+            }
+            self?.presenter?.logOut()
+//            ProfileLogoutService.shared.logout()
         }
         
-        print(profileImageURL)
+        actionYes.accessibilityIdentifier = "Yes"
         
-        avatarPhoto.kf.indicatorType = .activity
-        let processor = DownsamplingImageProcessor(size: avatarPhoto.bounds.size)
-        |> RoundCornerImageProcessor(cornerRadius: 61)
-        avatarPhoto.kf.setImage(
-            with: imageURL,
-            placeholder: UIImage(named: "Placeholder"),
-            options: [
-                .processor(processor),
-                .transition(.fade(1))
-            ])
+        let actionNo = UIAlertAction(
+            title: "Нет",
+            style: .default
+        ) { [weak self] _ in
+            guard self != nil else {
+                print("AlertPresenter: action")
+                return
+            }
+        }
+        alert.addAction(actionYes)
+        alert.addAction(actionNo)
+        
+        self.present(alert, animated: true)
     }
 }

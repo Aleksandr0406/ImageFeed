@@ -12,7 +12,8 @@ final class ImagesListService {
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
     var photos: [Photo] = []
-    var nextPageNumber: Int = 1
+    var nextPageNumber: Int = 0
+    var photosPerPage: Int = 10
     
     private let storageToken = OAuth2TokenStorage.shared.token
     private var task: URLSessionTask?
@@ -66,7 +67,7 @@ final class ImagesListService {
     func setLikeState(_ likedByUserCurrent: Bool, _ token: String, _ id: String, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
         let requestTypeIn = (!likedByUserCurrent) ? "POST" : "DELETE"
         fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: requestTypeIn) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-            guard let self else { return }
+            guard self != nil else { return }
             
             switch result {
             case .success(let data):
@@ -110,7 +111,8 @@ final class ImagesListService {
     private func makeRequestToPhotos(_ authToken: String) -> URLRequest? {
         guard var urlComponent = URLComponents(string: Constants.defaultURL + "photos") else { return nil }
         urlComponent.queryItems = [
-            URLQueryItem(name: "page", value: nextPageNumber.description)
+            URLQueryItem(name: "page", value: nextPageNumber.description),
+            URLQueryItem(name: "per_page", value: photosPerPage.description)
         ]
         guard let url = urlComponent.url else { return nil }
         
