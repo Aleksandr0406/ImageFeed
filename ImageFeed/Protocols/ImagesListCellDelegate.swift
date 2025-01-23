@@ -8,5 +8,5 @@
 import Foundation
 
 protocol ImagesListCellDelegate: AnyObject {
-    func imageListCellDidTapLike(_ cell: ImagesListCell, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void)
+    func imageListCellDidTapLike(_ cell: ImagesListCell, complition: @escaping (Result<Bool, Error>) -> Void)
 }

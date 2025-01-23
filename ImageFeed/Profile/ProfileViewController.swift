@@ -25,22 +25,8 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     private var descriptionProfile: UILabel = UILabel()
     private var exitButton: UIButton = UIButton()
     
-//    private let profileService: ProfileService = ProfileService.shared
-//    private let profileImageService: ProfileImageService = ProfileImageService.shared
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        profileImageServiceObserver = NotificationCenter.default
-//            .addObserver(
-//                forName: ProfileImageService.didChangeNotification,
-//                object: nil,
-//                queue: .main
-//            ) { [weak self] _ in
-//                guard let self else { return }
-//                self.updateAvatar()
-//            }
-        
         self.view.backgroundColor = UIColor(named: "Background")
         
         createProfileImage()
@@ -48,14 +34,13 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         createMailProfile()
         createDescriptionProfile()
         createExitButton()
-//        updateAvatar()
         presenter?.viewDidLoad()
     }
     
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        avatarPhoto.layer.cornerRadius = avatarPhoto.frame.width
-//    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        avatarPhoto.layer.cornerRadius = avatarPhoto.frame.width
+    }
     
     func updateUserInfo(name: String, login: String, bio: String) {
         print(name, login, bio)
@@ -65,16 +50,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     }
     
     func updateAvatarPhoto(with imageUrl: URL) {
-//        guard
-//            isViewLoaded,
-//            let profileImageURL = profileImageService.avatarURL,
-//            let imageURL = URL(string: profileImageURL)
-//                
-//        else {
-//            print("ProfileViewController: func updateAvatar() Cant rewrite imageURL into profileImageURL")
-//            return
-//        }
-        
         avatarPhoto.kf.indicatorType = .activity
         let processor = DownsamplingImageProcessor(size: avatarPhoto.bounds.size)
         |> RoundCornerImageProcessor(cornerRadius: 61)
@@ -103,7 +78,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     
     private func createProfileName(){
         profileName = UILabel()
-//        profileName.text = profileService.profile?.firstName
         profileName.textColor = UIColor(named: "WhiteText")
         profileName.font = .boldSystemFont(ofSize: 23)
         
@@ -116,7 +90,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     
     private func createMailProfile() {
         mailProfile = UILabel()
-//        mailProfile.text = profileService.profile?.username
         mailProfile.textColor = UIColor(named: "MailProfile")
         mailProfile.font = .systemFont(ofSize: 13)
         
@@ -130,7 +103,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     
     private func createDescriptionProfile() {
         descriptionProfile = UILabel()
-//        descriptionProfile.text = profileService.profile?.bio
         descriptionProfile.textColor = UIColor(named: "WhiteText")
         descriptionProfile.font = .systemFont(ofSize: 13)
         
@@ -156,29 +128,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         exitButton.accessibilityIdentifier = "logoutButton"
     }
     
-//    private func updateAvatar() {
-//        guard
-//            isViewLoaded,
-//            let profileImageURL = profileImageService.avatarURL,
-//            let imageURL = URL(string: profileImageURL)
-//                
-//        else {
-//            print("ProfileViewController: func updateAvatar() Cant rewrite imageURL into profileImageURL")
-//            return
-//        }
-//        
-//        avatarPhoto.kf.indicatorType = .activity
-//        let processor = DownsamplingImageProcessor(size: avatarPhoto.bounds.size)
-//        |> RoundCornerImageProcessor(cornerRadius: 61)
-//        avatarPhoto.kf.setImage(
-//            with: imageURL,
-//            placeholder: UIImage(named: "Placeholder"),
-//            options: [
-//                .processor(processor),
-//                .transition(.fade(1))
-//            ])
-//    }
-    
     @objc private func didTapExitButton() {
         let alert = UIAlertController(
             title: "Пока, пока!",
@@ -197,7 +146,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
                 return
             }
             self?.presenter?.logOut()
-//            ProfileLogoutService.shared.logout()
         }
         
         actionYes.accessibilityIdentifier = "Yes"

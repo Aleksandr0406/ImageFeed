@@ -8,10 +8,6 @@
 import Foundation
 import UIKit
 
-//protocol ImagesListCellDelegate: AnyObject {
-//    func imageListCellDidTapLike(_ cell: ImagesListCell, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void)
-//}
-
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     
@@ -35,11 +31,7 @@ final class ImagesListCell: UITableViewCell {
                 return
             }
             switch result {
-            case .success(let data):
-                guard let isLiked = data.photo?.likedByUser else {
-                    print("ImagesListCell: func likeButton")
-                    return
-                }
+            case .success(let isLiked):
                 let likeImage = isLiked ? UIImage(named: "Like_button_on") : UIImage(named: "Like_button_off")
                 DispatchQueue.main.async {
                     self.likeButton.setImage(likeImage, for: .normal)

@@ -16,7 +16,7 @@ final class SingleImageViewController: UIViewController {
         super.viewDidLoad()
         
         UIBlockingProgressHUD.show()
-        singleImage.kf.setImage(with: ImagesListViewController.urlFull) { [weak self] result in
+        singleImage.kf.setImage(with: ImagesListPresenter.urlFull) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             
             guard let self else {

@@ -7,14 +7,12 @@
 
 import UIKit
 
-final class ImagesListViewController: UIViewController {
-    static var urlFull: URL?
+final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
+    var presenter: ImagesListPresenterProtocol?
     
     @IBOutlet private var tableView: UITableView!
     
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let service: ImagesListService = .shared
-    private var photos: [Photo] = []
     private var dateFormatterISO = ISO8601DateFormatter()
     private var dateFormatter = DateFormatter()
     
@@ -22,12 +20,10 @@ final class ImagesListViewController: UIViewController {
         super.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         
-        service.fetchPhotosNextPage { [weak self] result in
+        presenter?.loadNextPhotoPage() { [weak self] result in
             guard let self else { return }
             switch result {
-            case .success(let newPhoto):
-                photos += newPhoto
-                service.photos += newPhoto
+            case .success(_):
                 tableView.reloadData()
             case .failure:
                 print("ImagesListViewController: func fetchPhotosNextPage ")
@@ -43,19 +39,18 @@ final class ImagesListViewController: UIViewController {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        tableView.reloadData()
         let testMode = ProcessInfo.processInfo.arguments.contains("testMode")
         
         if testMode {
             print("For TESTing")
         } else {
-            guard indexPath.row == photos.count - 1 else { return }
-            service.fetchPhotosNextPage() { [weak self] result in
-                guard let self else { return }
+            guard let photosCount = presenter?.photosCount(),
+                  indexPath.row == photosCount - 1 else { return }
+            presenter?.loadNextPhotoPage()  { [weak self] result in
+                guard self != nil else { return }
                 switch result {
-                case .success(let newPhoto):
-                    photos += newPhoto
-                    service.photos += newPhoto
-                    print(photos.count)
+                case .success(_):
                     tableView.reloadData()
                 case .failure:
                     print("ImagesListViewController: func fetchPhotosNextPage ")
@@ -67,7 +62,8 @@ final class ImagesListViewController: UIViewController {
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photos.count
+        guard let photosCount = presenter?.photosCount() else { return 0 }
+        return photosCount
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -88,39 +84,50 @@ extension ImagesListViewController: UITableViewDataSource {
 
 
 extension ImagesListViewController: ImagesListCellDelegate {
-    func imageListCellDidTapLike(_ cell: ImagesListCell, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
+    func imageListCellDidTapLike(_ cell: ImagesListCell, complition: @escaping (Result<Bool, Error>) -> Void) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-        let photo = photos[indexPath.row]
         
-        UIBlockingProgressHUD.show()
-        
-        guard let id = photo.id,
-              let likedByUser = photo.likedByUser,
-              let token = OAuth2TokenStorage.shared.token else {
-            print("ImagesListViewController: func imageListCellDidTapLike/ guard let id")
-            return
-        }
-        
-        service.setLikeState(likedByUser, token, id) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-            guard let self else { return }
-            
+        presenter?.changeLike(for: indexPath) { [weak self] result in
+            guard self != nil else { return }
             switch result {
             case .success(let data):
-                print("ImagesListViewController: func imageListCellDidTapLike/ .success")
-                self.photos[indexPath.row].likedByUser = !likedByUser
                 complition(.success(data))
             case .failure:
-                UIBlockingProgressHUD.dismiss()
-                print("ImagesListViewController: func imageListCellDidTapLike/ .failure")
+                print("ImagesListViewController: func fetchPhotosNextPage ")
             }
         }
     }
 }
 
+extension ImagesListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        presenter?.saveURLFull(for: indexPath)
+        
+        performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
+
+//        guard let imageWidth = presenter?.photos[indexPath.row].width,
+//              let imageHeight = presenter?.photos[indexPath.row].height else {
+//            print("ImagesListViewController: tableView/ height cell")
+//            return CGFloat() }
+        guard let imageWidth = presenter?.widthCell(for: indexPath),
+              let imageHeight = presenter?.heightCell(for: indexPath) else { return CGFloat() }
+        
+        let scale = imageViewWidth / imageWidth
+        let cellHeight = imageHeight * scale + imageInsets.top + imageInsets.bottom
+        return cellHeight
+    }
+}
+
 private extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+        guard let urlPhoto = presenter?.urlPhoto(for: indexPath) else { return }
         cell.cellImage.kf.indicatorType = .activity
-        cell.cellImage.kf.setImage(with: photos[indexPath.row].urls?.regular,
+        cell.cellImage.kf.setImage(with: urlPhoto,
                                    placeholder: UIImage(named: "PlaceholderForImage"),
                                    options: [.transition(.fade(1))]
         )
@@ -132,7 +139,7 @@ private extension ImagesListViewController {
             self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
         
-        guard let createdAt = photos[indexPath.row].createdAt,
+        guard let createdAt = presenter?.createdAt(for: indexPath),
               let date = dateFormatterISO.date(from: createdAt)
         else {
             print("ImagesListViewController: configCell")
@@ -144,11 +151,10 @@ private extension ImagesListViewController {
         dateFormatter.locale = Locale(identifier: "rus")
         cell.dateLabel.text = dateFormatter.string(from: date)
         
-        guard let isLiked = photos[indexPath.row].likedByUser else {
+        guard let likeImage = presenter?.likeImage(for: indexPath) else {
             print("ImagesListViewController: func configCell/guard isLiked ")
             return
         }
-        let likeImage = isLiked ? UIImage(named: "Like_button_on") : UIImage(named: "Like_button_off")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
     
@@ -166,25 +172,5 @@ private extension ImagesListViewController {
     }
 }
 
-extension ImagesListViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        ImagesListViewController.urlFull = photos[indexPath.row].urls?.full
-        print("URLFULL", ImagesListViewController.urlFull!)
-        
-        performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
-    }
-    
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-        guard let imageWidth = photos[indexPath.row].width,
-              let imageHeight = photos[indexPath.row].height else {
-            print("ImagesListViewController: tableView/ height cell")
-            return CGFloat() }
-        let scale = imageViewWidth / imageWidth
-        let cellHeight = imageHeight * scale + imageInsets.top + imageInsets.bottom
-        return cellHeight
-    }
-}
+
 

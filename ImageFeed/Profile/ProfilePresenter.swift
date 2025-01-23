@@ -11,17 +11,15 @@ import UIKit
 final class ProfilePresenter: ProfilePresenterProtocol {
     weak var view: ProfileViewControllerProtocol?
     
-    func viewDidLoad() {
+    func viewDidLoad() -> String? {
         guard
             let profileFirstName = ProfileService.shared.profile?.firstName,
-            let profileUsername = ProfileService.shared.profile?.username,
-            let profileBio = ProfileService.shared.profile?.bio
-        else { return }
+            let profileUsername = ProfileService.shared.profile?.username
+        else { return nil }
         
-        print(profileFirstName, profileUsername, profileBio)
+        guard let profileBio = ProfileService.shared.profile?.bio else { return "" }
         
         view?.updateUserInfo(name: profileFirstName, login: profileUsername, bio: profileBio)
-
         view?.profileImageServiceObserver = NotificationCenter.default
             .addObserver(
                 forName: ProfileImageService.didChangeNotification,
@@ -32,8 +30,9 @@ final class ProfilePresenter: ProfilePresenterProtocol {
                 print(">>> [ProfileViewController] Notification received, updating avatar")
                 self.updateAvatar()
             }
-        
         updateAvatar()
+        
+        return ""
     }
     
     func updateAvatar() {
