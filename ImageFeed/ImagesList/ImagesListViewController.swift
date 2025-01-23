@@ -39,7 +39,6 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        tableView.reloadData()
         let testMode = ProcessInfo.processInfo.arguments.contains("testMode")
         
         if testMode {
@@ -109,11 +108,7 @@ extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-
-//        guard let imageWidth = presenter?.photos[indexPath.row].width,
-//              let imageHeight = presenter?.photos[indexPath.row].height else {
-//            print("ImagesListViewController: tableView/ height cell")
-//            return CGFloat() }
+        
         guard let imageWidth = presenter?.widthCell(for: indexPath),
               let imageHeight = presenter?.heightCell(for: indexPath) else { return CGFloat() }
         

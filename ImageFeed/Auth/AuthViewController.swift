@@ -12,7 +12,7 @@ final class AuthViewController: UIViewController {
     weak var delegate: AuthViewControllerDelegate?
     
     private let identifierForSegue = "ShowWebView"
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackButton()

@@ -30,7 +30,7 @@ final class ProfileViewTests: XCTestCase {
         let presenter = ProfilePresenter()
         viewController.presenter = presenter
         presenter.view = viewController
-
+        
         presenter.viewDidLoad()
         
         XCTAssertTrue(viewController.updateProfileCalled)
@@ -52,7 +52,7 @@ final class ProfileViewTests: XCTestCase {
             name: ProfileImageService.didChangeNotification,
             object: nil
         )
-
+        
         XCTAssertEqual(viewController.updateAvatarCounter, 2)
     }
 }

@@ -66,7 +66,7 @@ extension WebViewViewController: WKNavigationDelegate {
         if let url = navigationAction.request.url {
             return presenter?.code(from: url)
         }
-            return nil
+        return nil
     }
 }
 

@@ -11,7 +11,10 @@ import XCTest
 final class ImagesListTests: XCTestCase {
     
     func testViewControllerCallsloadNextPhotoPage() {
-        let viewController = ImagesListViewController()
+        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+        
+        let viewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController") as! ImagesListViewController
+        
         let presenter = ImagesListPresenterSpy()
         viewController.presenter = presenter
         presenter.view = viewController
@@ -21,50 +24,49 @@ final class ImagesListTests: XCTestCase {
         XCTAssertTrue(presenter.loadNextPhotoPageCalled)
     }
     
-//    func testPresenterReturnsPhotoInfo() {
-//        let presenter = ImagesListPresenterFake()
-//        let photo = Photo(
-//            id: "someId",
-//            size: CGSize(),
-//            createdAt: "3 May 2024",
-//            welcomeDescription: "Some information about photo",
-//            thumbImageURL: "https://someWebsite.com/photoThumbImageURL",
-//            largeImageURL: "https://someWebsite.com/photoLargeImageURL",
-//            isLiked: false
-//        )
-//        let indexPath = IndexPath(row: 0, section: 0)
-//        
-//        presenter.photos = [photo]
-//        
-//        XCTAssertEqual(presenter.photosCount(), 1)
-//        XCTAssertEqual(presenter.getThumbImageUrl(for: indexPath), URL(string: photo.thumbImageURL))
-//        XCTAssertEqual(presenter.getLargeImageUrl(for: indexPath), URL(string: photo.largeImageURL))
-//        XCTAssertEqual(presenter.getSizeOfImage(for: indexPath), photo.size)
-//        XCTAssertEqual(presenter.getPhotoCreationDate(for: indexPath), photo.createdAt)
-//        XCTAssertEqual(presenter.isPhotoLiked(with: indexPath), photo.isLiked)
-//    }
-//    
-//    func testPresenterChangeLike() {
-//        let presenter = ImagesListPresenterFake()
-//        let photo = Photo(
-//            id: "someId",
-//            size: CGSize(),
-//            createdAt: "3 May 2024",
-//            welcomeDescription: "Some information about photo",
-//            thumbImageURL: "https://someWebsite.com/photoThumbImageURL",
-//            largeImageURL: "https://someWebsite.com/photoLargeImageURL",
-//            isLiked: false
-//        )
-//        let indexPath = IndexPath(row: 0, section: 0)
-//        presenter.photos = [photo]
-//        
-//        let expectation = XCTestExpectation()
-//        presenter.changeLike(for: indexPath) { _ in
-//            expectation.fulfill()
-//        }
-//        
-//        wait(for: [expectation], timeout: 5)
-//        XCTAssertEqual(presenter.photos[indexPath.row].isLiked, true)
-//    }
+    func testPresenterReturnsPhotoInfo() {
+        let presenter = ImagesListPresenterFake()
+        let photo = Photo(
+            id: "id",
+            createdAt: "01.01.01",
+            width: 300,
+            height: 400,
+            description: "description",
+            likedByUser: true,
+            urls: UrlsResult(raw: URL(string: "https://full.com"), full: URL(string: "https://full.com"), regular: URL(string: "https://regular.com"), small: URL(string: "https://small.com"), thumb: URL(string: "https://thumb.com"))
+        )
+        let indexPath = IndexPath(row: 0, section: 0)
+        
+        presenter.photos = [photo]
+        
+        XCTAssertEqual(presenter.photosCount(), 1)
+        XCTAssertEqual(presenter.urlPhoto(for: indexPath), photo.urls?.regular)
+        XCTAssertEqual(presenter.createdAt(for: indexPath), photo.createdAt)
+        XCTAssertEqual(presenter.widthCell(for: indexPath), photo.width)
+        XCTAssertEqual(presenter.heightCell(for: indexPath), photo.height)
+    }
+    
+    func testPresenterChangeLike() {
+        let presenter = ImagesListPresenterFake()
+        let photo = Photo(
+            id: "id",
+            createdAt: "01.01.01",
+            width: 300,
+            height: 400,
+            description: "description",
+            likedByUser: true,
+            urls: UrlsResult(raw: URL(string: "https://full.com"), full: URL(string: "https://full.com"), regular: URL(string: "https://regular.com"), small: URL(string: "https://small.com"), thumb: URL(string: "https://thumb.com"))
+        )
+        let indexPath = IndexPath(row: 0, section: 0)
+        presenter.photos = [photo]
+        
+        let expectation = XCTestExpectation()
+        presenter.changeLike(for: indexPath) { _ in
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 5)
+        XCTAssertEqual(presenter.photos[indexPath.row].likedByUser, false)
+    }
 }
 

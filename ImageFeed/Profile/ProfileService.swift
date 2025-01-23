@@ -13,7 +13,7 @@ final class ProfileService {
     var profile: ProfileResult?
     
     private var task: URLSessionTask?
-
+    
     private init() {}
     
     func fetchProfile(_ token: String, completion: @escaping (Result<ProfileResult, Error>) -> Void) {
