@@ -39,6 +39,7 @@
                                                 </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sya-DC-w8e" userLabel="likeButton">
                                                     <rect key="frame" x="333" y="4" width="44" height="44"/>
+                                                    <accessibility key="accessibilityConfiguration" identifier="like button off"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="44" id="GH6-PR-ccy"/>
                                                         <constraint firstAttribute="width" constant="44" id="i93-Pd-Fi2"/>
@@ -149,6 +150,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bDA-V2-Opa" userLabel="LogoButton">
                                 <rect key="frame" x="16" y="680" width="361" height="48"/>
                                 <color key="backgroundColor" name="WhiteText"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Authenticate"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="Tk5-RC-qpa"/>
                                 </constraints>
@@ -187,7 +189,7 @@
         <!--Web View View Controller-->
         <scene sceneID="zyk-ld-Ydq">
             <objects>
-                <viewController id="dDe-lt-AkK" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="dDe-lt-AkK" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Aqg-SV-nr7">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -263,6 +265,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v8Z-cw-lHX" userLabel="Backward Button">
                                 <rect key="frame" x="9" y="11" width="44" height="44"/>
+                                <accessibility key="accessibilityConfiguration" identifier="nav back button white"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="fTi-DQ-TwC"/>
                                     <constraint firstAttribute="width" constant="44" id="sRb-oI-jPh"/>

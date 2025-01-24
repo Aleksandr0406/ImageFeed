@@ -12,7 +12,8 @@ final class ImagesListService {
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
     var photos: [Photo] = []
-    var nextPageNumber: Int = 1
+    var nextPageNumber: Int = 0
+    var photosPerPage: Int = 10
     
     private let storageToken = OAuth2TokenStorage.shared.token
     private var task: URLSessionTask?
@@ -22,10 +23,7 @@ final class ImagesListService {
     func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void) {
         guard let token = storageToken else { return }
         fetchPhotos(token) { [weak self] (result: Result<[Photo], Error>) in
-            guard self != nil else {
-                print("ImagesListService: func fetchPhotosNextPage(...)/guard let self")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let data):
@@ -36,21 +34,18 @@ final class ImagesListService {
         }
     }
     
-    func fetchIsLiked(tokenIn token: String, idIn id: String, requestTypeIn requestType: String, completion: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
+    func fetchIsLiked(
+        tokenIn token: String,
+        idIn id: String,
+        requestTypeIn requestType: String,
+        completion: @escaping (Result<IslikedPhotoStats, Error>) -> Void
+    ) {
         task?.cancel()
         
-        guard let requestToIsLiked = makeRequestToIsLiked(tokenIn: token, idIn: id, requestTypein: requestType) else {
-            print("ProfileService: func fetchProfile(...)/requestToProfile Error make profile request")
-            return
-        }
+        guard let requestToIsLiked = makeRequestToIsLiked(tokenIn: token, idIn: id, requestTypein: requestType) else { return }
         
         let task = URLSession.shared.objectTask(for: requestToIsLiked) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-            UIBlockingProgressHUD.dismiss()
-            
-            guard self != nil else {
-                print("ImagesListService: URLSession.shared.objectTask/ guard self")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let data):
@@ -70,7 +65,6 @@ final class ImagesListService {
             
             switch result {
             case .success(let data):
-                print("ImagesListService: func imageListCellDidTapLike/ .success")
                 complition(.success(data))
             case .failure:
                 print("ImagesListService: fetchIsLiked/ case .failure")
@@ -82,18 +76,10 @@ final class ImagesListService {
         nextPageNumber += 1
         task?.cancel()
         
-        guard let requestToPhotos = makeRequestToPhotos(token) else {
-            print("ProfileService: func fetchProfile(...)/requestToProfile Error make profile request")
-            return
-        }
+        guard let requestToPhotos = makeRequestToPhotos(token) else { return }
         
         let task = URLSession.shared.objectTask(for: requestToPhotos) { [weak self] (result: Result<[Photo], Error>) in
-            UIBlockingProgressHUD.dismiss()
-            
-            guard self != nil else {
-                print("ImagesListService: func fetchPhotos(...)/URLSession.shared.objectTask")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let data):
@@ -110,7 +96,8 @@ final class ImagesListService {
     private func makeRequestToPhotos(_ authToken: String) -> URLRequest? {
         guard var urlComponent = URLComponents(string: Constants.defaultURL + "photos") else { return nil }
         urlComponent.queryItems = [
-            URLQueryItem(name: "page", value: nextPageNumber.description)
+            URLQueryItem(name: "page", value: nextPageNumber.description),
+            URLQueryItem(name: "per_page", value: photosPerPage.description)
         ]
         guard let url = urlComponent.url else { return nil }
         

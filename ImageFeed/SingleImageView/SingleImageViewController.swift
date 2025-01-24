@@ -16,13 +16,10 @@ final class SingleImageViewController: UIViewController {
         super.viewDidLoad()
         
         UIBlockingProgressHUD.show()
-        singleImage.kf.setImage(with: ImagesListViewController.urlFull) { [weak self] result in
+        singleImage.kf.setImage(with: ImagesListPresenter.urlFull) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             
-            guard let self else {
-                print("SingleImageViewController: viewDidLoad/ guard let self ")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let imageResult):
@@ -46,9 +43,7 @@ final class SingleImageViewController: UIViewController {
             scrollView.minimumZoomScale = scale
             scrollView.maximumZoomScale = 1.25
             scrollView.setZoomScale(scale, animated: false)
-        } else {
-            print("Деление на ноль")
-        }
+        } else {}
         
         scrollView.layoutIfNeeded()
         let newContentSize = scrollView.contentSize
@@ -62,10 +57,7 @@ final class SingleImageViewController: UIViewController {
     }
     
     @IBAction private func didTapShareButton(_ sender: Any) {
-        guard let image = singleImage.image else {
-            print("SingleImageViewController: func didTapShareButton(...)")
-            return
-        }
+        guard let image = singleImage.image else { return }
         let share = UIActivityViewController(
             activityItems: [image],
             applicationActivities: nil

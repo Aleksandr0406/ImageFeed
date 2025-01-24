@@ -2,7 +2,7 @@
 //  Constants.swift
 //  ImageFeed
 //
-//  Created by 1111 on 19.11.2024.
+//  Created by 1111 on 24.01.2025.
 //
 
 import Foundation
