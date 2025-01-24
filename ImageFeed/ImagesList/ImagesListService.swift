@@ -34,7 +34,12 @@ final class ImagesListService {
         }
     }
     
-    func fetchIsLiked(tokenIn token: String, idIn id: String, requestTypeIn requestType: String, completion: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
+    func fetchIsLiked(
+        tokenIn token: String,
+        idIn id: String,
+        requestTypeIn requestType: String,
+        completion: @escaping (Result<IslikedPhotoStats, Error>) -> Void
+    ) {
         task?.cancel()
         
         guard let requestToIsLiked = makeRequestToIsLiked(tokenIn: token, idIn: id, requestTypein: requestType) else { return }

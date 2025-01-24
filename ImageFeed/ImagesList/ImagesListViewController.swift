@@ -92,6 +92,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
             guard let self else { return }
             switch result {
             case .success(let data):
+                UIBlockingProgressHUD.dismiss()
                 complition(.success(data))
             case .failure:
                 UIBlockingProgressHUD.dismiss()

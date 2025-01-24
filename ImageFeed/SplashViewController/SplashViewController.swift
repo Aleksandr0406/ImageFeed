@@ -129,7 +129,6 @@ extension SplashViewController: AuthViewControllerDelegate {
                 guard let username = data.username else { return }
                 fetchProfileImageURL(token, username)
             case .failure:
-//                UIBlockingProgressHUD.dismiss()
                 alert.presentAlert(alert: AlertViewModel(
                     title: "Что-то пошло не так(",
                     message: "Не удалось войти в систему",
