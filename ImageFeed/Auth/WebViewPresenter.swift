@@ -10,7 +10,7 @@ import UIKit
 
 final class WebViewPresenter: WebViewPresenterProtocol {
     weak var view: WebViewViewControllerProtocol?
-    var authHelper: AuthHelperProtocol
+    private let authHelper: AuthHelperProtocol
     
     init(authHelper: AuthHelperProtocol) {
         self.authHelper = authHelper

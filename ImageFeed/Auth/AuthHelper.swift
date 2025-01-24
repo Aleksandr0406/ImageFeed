@@ -8,7 +8,7 @@
 import Foundation
 
 final class AuthHelper: AuthHelperProtocol {
-    let configuration: AuthConfiguration
+    private let configuration: AuthConfiguration
     
     init(configuration: AuthConfiguration = .standart) {
         self.configuration = configuration
@@ -42,7 +42,6 @@ final class AuthHelper: AuthHelperProtocol {
         {
             return codeItem.value
         } else {
-            print("WebViewViewController: func code")
             return nil
         }
     }

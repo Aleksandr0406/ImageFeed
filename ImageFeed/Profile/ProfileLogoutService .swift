@@ -40,7 +40,6 @@ final class ProfileLogoutService {
     
     private func switchToAuthViewController() {
         guard let window = UIApplication.shared.windows.first else {
-            print("SplashViewController: func switchToTabBarController()")
             assertionFailure("Invalid window configuration")
             return
         }

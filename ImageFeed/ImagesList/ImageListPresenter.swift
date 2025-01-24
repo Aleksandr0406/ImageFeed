@@ -41,36 +41,26 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     func changeLike(for indexPath: IndexPath, completion: @escaping (Result<Bool, Error>) -> Void) {
         let photo = photos[indexPath.row]
         
-        UIBlockingProgressHUD.show()
-        
         guard let id = photo.id,
               let likedByUser = photo.likedByUser,
-              let token = OAuth2TokenStorage.shared.token else {
-            print("ImagesListViewController: func imageListCellDidTapLike/ guard let id")
-            return
-        }
+              let token = OAuth2TokenStorage.shared.token else { return }
         
         service.setLikeState(likedByUser, token, id) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
             guard let self else { return }
             
             switch result {
             case .success(let data):
-                print("ImagesListViewController: func imageListCellDidTapLike/ .success")
                 self.photos[indexPath.row].likedByUser = !likedByUser
                 guard let isLiked = data.photo?.likedByUser else { return }
                 completion(.success(isLiked))
             case .failure:
-                UIBlockingProgressHUD.dismiss()
                 print("ImagesListViewController: func imageListCellDidTapLike/ .failure")
             }
         }
     }
     
     func likeImage(for indexPath: IndexPath) -> UIImage? {
-        guard let isLiked = photos[indexPath.row].likedByUser else {
-            print("ImagesListViewController: func configCell/guard isLiked ")
-            return nil
-        }
+        guard let isLiked = photos[indexPath.row].likedByUser else { return nil }
         
         let likeImage = isLiked ? UIImage(named: "Like_button_on") : UIImage(named: "Like_button_off")
         return likeImage
@@ -78,7 +68,6 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     
     func saveURLFull(for indexPath: IndexPath) {
         ImagesListPresenter.urlFull = photos[indexPath.row].urls?.full
-        print("URLFULL", ImagesListPresenter.urlFull!)
     }
     
     func widthCell(for indexPath: IndexPath) -> CGFloat? {

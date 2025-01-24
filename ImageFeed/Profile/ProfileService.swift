@@ -19,18 +19,11 @@ final class ProfileService {
     func fetchProfile(_ token: String, completion: @escaping (Result<ProfileResult, Error>) -> Void) {
         task?.cancel()
         
-        guard let requestToProfile = makeRequestToProfile(token) else {
-            print("ProfileService: func fetchProfile(...)/requestToProfile Error make profile request")
-            return
-        }
+        guard let requestToProfile = makeRequestToProfile(token) else { return }
         
         let task = URLSession.shared.objectTask(for: requestToProfile) { [weak self] (result: Result<ProfileResult, Error>) in
-            UIBlockingProgressHUD.dismiss()
             
-            guard self != nil else {
-                print("ProfileService: func fetchProfile(...)/URLSession.shared.objectTask")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let data):
@@ -46,7 +39,6 @@ final class ProfileService {
     
     private func makeRequestToProfile(_ authToken: String) -> URLRequest? {
         guard let url = URL(string: Constants.defaultURL + "me") else {
-            print("ProfileService: func makeRequestToProfile(...)")
             assertionFailure("Failed to create URL")
             return nil
         }

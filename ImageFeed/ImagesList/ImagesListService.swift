@@ -23,10 +23,7 @@ final class ImagesListService {
     func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void) {
         guard let token = storageToken else { return }
         fetchPhotos(token) { [weak self] (result: Result<[Photo], Error>) in
-            guard self != nil else {
-                print("ImagesListService: func fetchPhotosNextPage(...)/guard let self")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let data):
@@ -40,18 +37,10 @@ final class ImagesListService {
     func fetchIsLiked(tokenIn token: String, idIn id: String, requestTypeIn requestType: String, completion: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
         task?.cancel()
         
-        guard let requestToIsLiked = makeRequestToIsLiked(tokenIn: token, idIn: id, requestTypein: requestType) else {
-            print("ProfileService: func fetchProfile(...)/requestToProfile Error make profile request")
-            return
-        }
+        guard let requestToIsLiked = makeRequestToIsLiked(tokenIn: token, idIn: id, requestTypein: requestType) else { return }
         
         let task = URLSession.shared.objectTask(for: requestToIsLiked) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-            UIBlockingProgressHUD.dismiss()
-            
-            guard self != nil else {
-                print("ImagesListService: URLSession.shared.objectTask/ guard self")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let data):
@@ -67,11 +56,10 @@ final class ImagesListService {
     func setLikeState(_ likedByUserCurrent: Bool, _ token: String, _ id: String, complition: @escaping (Result<IslikedPhotoStats, Error>) -> Void) {
         let requestTypeIn = (!likedByUserCurrent) ? "POST" : "DELETE"
         fetchIsLiked(tokenIn: token, idIn: id, requestTypeIn: requestTypeIn) { [weak self] (result: Result<IslikedPhotoStats, Error>) in
-            guard self != nil else { return }
+            guard let self else { return }
             
             switch result {
             case .success(let data):
-                print("ImagesListService: func imageListCellDidTapLike/ .success")
                 complition(.success(data))
             case .failure:
                 print("ImagesListService: fetchIsLiked/ case .failure")
@@ -83,18 +71,10 @@ final class ImagesListService {
         nextPageNumber += 1
         task?.cancel()
         
-        guard let requestToPhotos = makeRequestToPhotos(token) else {
-            print("ProfileService: func fetchProfile(...)/requestToProfile Error make profile request")
-            return
-        }
+        guard let requestToPhotos = makeRequestToPhotos(token) else { return }
         
         let task = URLSession.shared.objectTask(for: requestToPhotos) { [weak self] (result: Result<[Photo], Error>) in
-            UIBlockingProgressHUD.dismiss()
-            
-            guard self != nil else {
-                print("ImagesListService: func fetchPhotos(...)/URLSession.shared.objectTask")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let data):

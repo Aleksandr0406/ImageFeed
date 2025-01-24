@@ -62,7 +62,6 @@ final class SplashViewController: UIViewController {
     }
     
     private func switchToAuthViewController() {
-        print("SplashViewController: func switchToAuthViewController()")
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         
         guard let viewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else { return }
@@ -75,7 +74,6 @@ final class SplashViewController: UIViewController {
     
     private func switchToTabBarController() {
         guard let window = UIApplication.shared.windows.first else {
-            print("SplashViewController: func switchToTabBarController()")
             assertionFailure("Invalid window configuration")
             return
         }
@@ -89,12 +87,8 @@ final class SplashViewController: UIViewController {
 
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
-        print("SplashViewController: func didAuthenticate(...)")
         vc.dismiss(animated: true) { [weak self] in
-            guard let self else {
-                print("SplashViewController: func didAuthenticate(...)/guard let self")
-                return
-            }
+            guard let self else { return }
             self.fetchOAuthToken(code)
         }
     }
@@ -103,22 +97,15 @@ extension SplashViewController: AuthViewControllerDelegate {
         UIBlockingProgressHUD.show()
         
         OAuth2Service.shared.fetchOAuthToken(code) { [weak self] result in
-            guard let self else {
-                print("SplashViewController: func fetchOAuthToken(...)")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let token):
                 OAuth2TokenStorage.shared.token = token
-                guard OAuth2TokenStorage.shared.token != nil else {
-                    print("SplashViewController: func fetchOAuthToken(...)/guard isSuccess Cant save token in keychain")
-                    return
-                }
+                guard OAuth2TokenStorage.shared.token != nil else { return }
                 
                 fetchProfile(token)
             case .failure:
-                print("SplashViewController: func fetchOAuthToken(...)/ case .failure Error fetch data token from OAuth2Service")
                 alert.presentAlert(alert: AlertViewModel(
                     title: "Что-то пошло не так(",
                     message: "Не удалось войти в систему",
@@ -131,23 +118,18 @@ extension SplashViewController: AuthViewControllerDelegate {
     
     private func fetchProfile(_ token: String) {
         profileService.fetchProfile(token) { [weak self] (result: Result<ProfileResult, Error>) in
-            guard let self else {
-                print("SplashViewController: func fetchProfile(...)/guard let self")
-                return
-            }
+            guard let self else { return }
+            
+            UIBlockingProgressHUD.dismiss()
             
             switch result {
             case .success(let data):
                 ProfileService.shared.profile = data
                 
-                guard let username = data.username else {
-                    print("SplashViewController: func fetchProfile(...)/guard let username")
-                    return
-                }
+                guard let username = data.username else { return }
                 fetchProfileImageURL(token, username)
             case .failure:
-                print("SplashViewController: func fetchProfile(...)/case .failure Error fetch data profile from ProfileService")
-                UIBlockingProgressHUD.dismiss()
+//                UIBlockingProgressHUD.dismiss()
                 alert.presentAlert(alert: AlertViewModel(
                     title: "Что-то пошло не так(",
                     message: "Не удалось войти в систему",
@@ -161,17 +143,11 @@ extension SplashViewController: AuthViewControllerDelegate {
         ProfileImageService.shared.fetchProfileImageURL(username, token) {
             [weak self] (result: Result<ProfileResult, Error>) in
             
-            guard let self else {
-                print("SplashViewController: func fetchProfileImageURL(...)/guard let self")
-                return
-            }
+            guard let self else { return }
             
             switch result {
             case .success(let data):
-                guard let avatarURL = data.profileImage?.large else {
-                    print("SplashViewController: func fetchProfileImageURL(...)/guard let avatarURL")
-                    return
-                }
+                guard let avatarURL = data.profileImage?.large else { return }
                 ProfileImageService.shared.avatarURL = avatarURL
                 
                 NotificationCenter.default

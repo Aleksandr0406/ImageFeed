@@ -21,7 +21,6 @@ final class OAuth2Service {
         assert(Thread.isMainThread)
         
         guard lastCode != code else {
-            print("OAuth2Service: func fetchOAuthToken(...)/guard lastCode")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
@@ -30,16 +29,12 @@ final class OAuth2Service {
         lastCode = code
         
         guard let makeOAuthTokenRequest = makeOAuthTokenRequest(code: code) else {
-            print("OAuth2Service: func fetchOAuthToken(...)/makeOAuthTokenRequest Error makeTokenRequest")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
         
         let task = urlSession.objectTask(for: makeOAuthTokenRequest) { [weak self] (result: Result<OAuthTokenResponseBody, Error>)  in
-            guard self != nil else {
-                print("OAuth2Service: func fetchOAuthToken(...)/urlSession.objectTask")
-                return
-            }
+            guard let self else  { return }
             
             switch result {
             case .success(let response):
@@ -67,7 +62,6 @@ final class OAuth2Service {
                 + "&&grant_type=authorization_code",
                 relativeTo: baseURL
               ) else {
-            print("OAuth2Service: stroke 65-73")
             assertionFailure("Failed to create URL")
             return nil
         }

@@ -1,5 +1,5 @@
 //
-//  ImagesListPresenterFake.swift
+//  ImagesListPresenterMock.swift
 //  ImageFeedTests
 //
 //  Created by 1111 on 23.01.2025.
@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-final class ImagesListPresenterFake: ImagesListPresenterProtocol {
+final class ImagesListPresenterMock: ImagesListPresenterProtocol {
     weak var view: ImagesListViewControllerProtocol?
     var photos: [Photo] = []
     

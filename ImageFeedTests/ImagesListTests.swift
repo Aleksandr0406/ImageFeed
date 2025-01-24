@@ -25,7 +25,7 @@ final class ImagesListTests: XCTestCase {
     }
     
     func testPresenterReturnsPhotoInfo() {
-        let presenter = ImagesListPresenterFake()
+        let presenter = ImagesListPresenterMock()
         let photo = Photo(
             id: "id",
             createdAt: "01.01.01",
@@ -47,7 +47,7 @@ final class ImagesListTests: XCTestCase {
     }
     
     func testPresenterChangeLike() {
-        let presenter = ImagesListPresenterFake()
+        let presenter = ImagesListPresenterMock()
         let photo = Photo(
             id: "id",
             createdAt: "01.01.01",

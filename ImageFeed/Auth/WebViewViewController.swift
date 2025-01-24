@@ -25,10 +25,7 @@ final class WebViewViewController: UIViewController & WebViewViewControllerProto
             \.estimatedProgress,
              options: [],
              changeHandler: { [weak self] _, _ in
-                 guard let self else {
-                     print("WebViewViewController: func viewDidLoad()")
-                     return
-                 }
+                 guard let self else { return }
                  self.presenter?.didUpdateProgressValue(webView.estimatedProgress)
              })
         

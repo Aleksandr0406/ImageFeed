@@ -27,7 +27,6 @@ final class ProfilePresenter: ProfilePresenterProtocol {
                 queue: .main
             ) { [weak self] _ in
                 guard let self else { return }
-                print(">>> [ProfileViewController] Notification received, updating avatar")
                 self.updateAvatar()
             }
         updateAvatar()

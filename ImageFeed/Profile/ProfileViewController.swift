@@ -43,7 +43,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     }
     
     func updateUserInfo(name: String, login: String, bio: String) {
-        print(name, login, bio)
         profileName.text = name
         mailProfile.text = login
         descriptionProfile.text = bio
@@ -141,11 +140,8 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             title: "Да",
             style: .default
         ) { [weak self] _ in
-            guard self != nil else {
-                print("AlertPresenter: action")
-                return
-            }
-            self?.presenter?.logOut()
+            guard let self else { return }
+            self.presenter?.logOut()
         }
         
         actionYes.accessibilityIdentifier = "Yes"
@@ -153,12 +149,8 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         let actionNo = UIAlertAction(
             title: "Нет",
             style: .default
-        ) { [weak self] _ in
-            guard self != nil else {
-                print("AlertPresenter: action")
-                return
-            }
-        }
+        )
+        
         alert.addAction(actionYes)
         alert.addAction(actionNo)
         
